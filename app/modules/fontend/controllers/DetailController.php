@@ -36,8 +36,6 @@ class DetailController extends BaseController
         if(empty($product)){
             die;
         }
-        $product->view = (isset($product->view)?$product->view + 1 : 1);
-        $product->save();
         $data['feature'] = ProductClone::find(array('conditions' => array('idcate' => (int)$product->idcate),'sort'=>array('_id'=>-1),'limit'=>10, 'skip'=>1));
         $data['feature_user'] = Product::find(array('conditions' => array('idcate' => (int)$product->idcate),'sort'=>array('_id'=>-1),'limit'=>10, 'skip'=>1));
         $data['category'] = CmsCategory::findFirst(array('id='.$product->idcate));

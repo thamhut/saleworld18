@@ -36,7 +36,7 @@
                             <ul class="bxslider3">
                                 <?php if(isset($product->image) && is_array($product->image)):?>
                                 <?php foreach($product->image as $k=>$v): ?>
-                                    <li><div><img style="width: 100%;" src="<?php echo $v; ?>">
+                                    <li><div><img style="width: 100%;" src="/<?php echo \App\Helpers\App::createThumb(190,280,$v); ?>">
                                             <input type="text" name="image[]" hidden="true"  value="<?php echo $v; ?>" >
                                         </div></li>
                                 <?php endforeach; ?>
@@ -51,9 +51,8 @@
                         <br>
                         <div class="col-md-4">Price:</div><div class="col-md-8">$<?php echo $product->oldprice; ?></div>
                         <div class="col-md-4">Sale:</div><div class="col-md-8">$<?php echo $product->newprice; ?></div>
-                        <div class="col-md-4">From:</div><div class="col-md-8"><?php foreach($shop as $k=>$v): if($v->id==$product->shopId): echo $v->domain; endif; endforeach;?></div>
+                        <div class="col-md-4">From:</div><div class="col-md-8"><?php foreach($shop as $k=>$v): if((int)$v->id==(int)$product->shopId): echo $v->domain; endif; endforeach;?></div>
                         <div class="col-md-4">Date:</div><div class="col-md-8"><?php echo isset($product->created_at)?date('Y-m-d H:i', strtotime($product->created_at)):'0-0-0'; ?></div>
-                        <div class="col-md-4">View:</div><div class="col-md-8"><?php echo isset($product->view)?$product->view:''; ?></div>
                         <div>Click to <a style="color: #F06E10 !important;" href="<?php echo isset($product->link)?$product->link:''; ?>">here</a> to BUY!</div>
                     </div>
                 </div>
@@ -76,7 +75,7 @@
                         <?php foreach($feature_user as $v):?>
                             <li>
                                 <a href="/product-user/<?= isset($v->slug)?$v->slug:''?>">
-                                    <img style="width: 100%" src="<?= isset($v->image[0])?$v->image[0]:''; ?>" >
+                                    <img style="width: 100%" src="/<?= \App\Helpers\App::createThumb(160,240,isset($v->image[0])?$v->image[0]:''); ?>" >
                                     <br>
                                     <h3 style="font-size: 12px"><?= isset($v->title)?$v->title:'';?></h3>
                                 </a>
@@ -99,10 +98,8 @@
                                     <div class="col-md-6"><img style="width: 100%" src="<?php echo isset($v->image[0])?$v->image[0]:''; ?>"></div>
                                     <div class="col-md-6">
                                         <a href="/product-clone/<?= isset($v->slug)?$v->slug:''; ?>">
-                                            <h3><?php echo isset($v->title)?\App\Helpers\String::snippet($v->title,100):''; ?></h3>
-                                            <span>View : <?php echo isset($v->view)?$v->view:0; ?></span>
-                                            <br>
-                                            <span>From : <?php foreach($shop as $vs): if(isset($v->shopId)&&$vs->id==$v->shopId): echo isset($vs->domain)?$vs->domain:''; endif; endforeach;?></span>
+                                            <h3><?php echo isset($v->title)?\App\Helpers\String::snippet($v->title,100):''; ?></h3><br>
+                                            <span>From : <?php foreach($shop as $vs): if(isset($v->shopId)&&(int)$vs->id==(int)$v->shopId): echo isset($vs->domain)?$vs->domain:''; endif; endforeach;?></span>
                                         </a>
                                     </div>
                                 </div>

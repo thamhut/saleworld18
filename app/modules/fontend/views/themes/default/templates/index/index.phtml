@@ -63,7 +63,7 @@
         </div>
         <ul class="bxslider2">
             <?php foreach($productuser as $k=>$v):?>
-            <li class="bxslider-inner" ><a href="/product-user/<?php echo isset($v->slug)?$v->slug:''; ?>"><div class="item-shop"><img style="height: 260px" src="<?php echo \App\Helpers\App::resize_image(180, 260, isset($v->image[0])?$v->image[0]:'')?>"  /><div class="item-info"><a><?php echo $v->title;?></a></div></div></a></li>
+            <li class="bxslider-inner" ><a href="/product-user/<?php echo isset($v->slug)?$v->slug:''; ?>"><div class="item-shop"><img style="height: 260px" src="<?php echo \App\Helpers\App::resize_image(180, 260, isset($v->image[0])?$v->image[0]:'')?>"  /><div class="item-info"><?php echo $v->title;?></div></div></a></li>
             <?php endforeach;?>
         </ul>
     </div>
@@ -78,7 +78,7 @@
         </div>
         <ul class="bxslider2">
             <?php foreach($productclone as $k=>$v):?>
-            <li class="bxslider-inner" ><div class="item-shop"><img style="height: 200px" src="<?php echo \App\Helpers\App::resize_image(160,200,isset($v->image[0])?$v->image[0]:'');?>"  /><div class="item-info"><a href="/product-clone/<?php echo isset($v->slug)?$v->slug:''; ?>"><?php echo $v->title;?></a></div></div></li>
+            <li class="bxslider-inner" ><a href="/product-clone/<?php echo isset($v->slug)?$v->slug:''; ?>"><div class="item-shop"><img style="height: 200px" src="<?php echo \App\Helpers\App::resize_image(160,200,isset($v->image[0])?$v->image[0]:'');?>"  /><div class="item-info"><?php echo $v->title;?></div></div></a></li>
             <?php endforeach;?>
         </ul>
     </div>

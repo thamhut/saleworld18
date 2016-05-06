@@ -4,28 +4,33 @@ namespace App\Helpers;
 use OE\Object;
 use Phalcon\DI;
 class App extends Object {
-	
+
 	public static function import(array $classes) {
 		$loader = new \Phalcon\Loader();
 		$loader->registerClasses($classes)->register();
 	}
-	
+
 	public static function getDatepickerFormat() {
-	    return 'yy-mm-dd';
+		return 'yy-mm-dd';
 // 		return self::getLanguage() == 'ja' ? 'yy-mm-dd' : 'dd-mm-yy';
 	}
-	
+
 	public static function getDateFormatPhp() {
-	    return 'yy-mm-dd';
+		return 'yy-mm-dd';
 // 		return self::getLanguage() == 'ja' ? 'yy-mm-dd' : 'dd-mm-yy';
 	}
-	
+
 	public static function getLanguage() {
-		return DI::getDefault()->get('session')->get('language');		
+		return DI::getDefault()->get('session')->get('language');
 	}
 
 	public static function resize_image($max_width,$max_height, $src){
 		$des = self::createThumb($max_width,$max_height, $src);
+		if(file_exists($des)){
+			return $des;
+		}
+		$src = str_replace('/uploads/','uploads/',$src);
+		$src = '../public/'.$src;
 		$img_src = getimagesize($src);
 		$width = $src_w = $img_src[0];
 		$height = $src_h = $img_src[1];
@@ -123,5 +128,5 @@ class App extends Object {
 			return null;
 		}
 	}
-	
+
 }
