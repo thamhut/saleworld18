@@ -1,0 +1,132 @@
+<div class="content-box">
+    <div class="search-category row">
+        <div class="col-md-8">
+            <div class="col-md-12 box-search form-group" style="margin-left: -15px; padding-left: 0px">
+                <div class="col-xs-2" style="padding-right: 0px; margin-right: -18px;">
+                    <select class="form-control" style="padding-right: 0px; padding-left: 0px;">
+                        <option value="-1">User's post</option>
+                        <?php foreach($shop as $k=>$v):?>
+                            <option value="<?=$v->id ?>"><?php echo $v->domain; ?></option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+                <div class="col-xs-8">
+                    <input class="form-control" style="border-left: 1px dashed #ddd">
+                </div>
+                <div class="col-xs-1">
+                    <button class="btn btn-default">Search</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="box-detail">
+        <div class="label-category">
+            <a href="/">Home</a> <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+            <a href="/category/<?php echo $category->slug?>"><?php echo $category->title?></a> <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+            <a href=""><?php echo $product->title ?></a>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <hr>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div>
+                            <ul class="bxslider3">
+                                <?php if(isset($product->image) && is_array($product->image)):?>
+                                    <?php foreach($product->image as $k=>$v): ?>
+                                        <li><div><img style="width: 100%;" src="<?php echo $v; ?>">
+                                                <input type="text" name="image[]" hidden="true"  value="<?php echo $v; ?>" >
+                                            </div></li>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <img src="" >
+                                <?php endif;?>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-9 detail-info">
+                        <h1><strong><?php echo $product->title; ?></strong></h1>
+                        <br>
+                        <div class="col-md-4">Price:</div><div class="col-md-8">$<?php echo $product->oldprice; ?></div>
+                        <div class="col-md-4">Sale:</div><div class="col-md-8">$<?php echo $product->newprice; ?></div>
+                        <div class="col-md-4">Date:</div><div class="col-md-8"><?php echo isset($product->created_at)?date('Y-m-d H:i', strtotime($product->created_at)):'0-0-0'; ?></div>
+                        <div class="col-md-4">View:</div><div class="col-md-8"><?php echo isset($product->view)?$product->view:''; ?></div>
+                        <div>Click to <a style="color: #F06E10 !important;" href="<?php echo isset($product->link)?$product->link:''; ?>">here</a> to BUY!</div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <h3><b>Description</b></h3>
+                    <hr style="margin-top: 10px">
+                    <div>
+                        <?php echo isset($product->content)?$product->content:'' ?>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <br>
+                <div>
+                    <h3>Shop's relate products</h3>
+                    <br>
+                    <ul class="bxslider4">
+                        <?php foreach($feature_user as $v):?>
+                            <li>
+                                <a href="/product-clone/<?= isset($v->slug)?$v->slug:''?>">
+                                    <img style="width: 100%" src="/<?= \App\Helpers\App::createThumb(160,240,isset($v->image[0])?$v->image[0]:''); ?>" >
+                                    <br>
+                                    <h3 style="font-size: 12px"><?= isset($v->title)?$v->title:'';?></h3>
+                                    <span style="opacity:0.7; font-size: 12px;">From : <?php foreach($shop as $vs): if(isset($v->shopId)&&$vs->id==$v->shopId): echo isset($vs->domain)?$vs->domain:''; endif; endforeach;?></span>
+                                </a>
+                            </li>
+                        <?php endforeach;?>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-3 box-right"  style="margin-top: 10px;">
+                <div class="advs"></div>
+                <div class="feature-product" style="padding-left: 0px; padding-right: 0px">
+                    <div class="row" style="padding: 0px 10px;">
+                        <h4><strong>Relate</strong></h4>
+                        <hr>
+                    </div>
+                    <ul>
+                        <?php foreach($feature as $k=>$v):?>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6"><img style="width: 100%" src="<?php echo isset($v->image[0])?$v->image[0]:''; ?>"></div>
+                                    <div class="col-md-6">
+                                        <a href="/product-user/<?= isset($v->slug)?$v->slug:''; ?>">
+                                            <h3><?php echo isset($v->title)?\App\Helpers\String::snippet($v->title,100):''; ?></h3>
+                                            <span>View : <?php echo isset($v->view)?$v->view:0; ?></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endforeach;?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.bxslider3').bxSlider({
+            pager: false,
+        });
+        $('.bxslider4').bxSlider({
+            pager: false,
+            minSlides:5,
+            maxSlides:5,
+            slideWidth: 162,
+            slideMargin: 10,
+            moveSlides:5,
+            infiniteLoop: false,
+            hideControlOnEnd: true
+        });
+        $('.head .box-search').remove();
+    });
+</script>

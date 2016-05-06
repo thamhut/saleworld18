@@ -1,0 +1,48 @@
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="oe-toptool">
+            <?php echo Phalcon\Tag::linkTo(array("/backend/slider/index", '<i class="fa fa-mail-reply"></i> '. $t->_('Back To List'), 'class' => 'btn btn-primary')); ?>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <form action="" method="post" enctype="multipart/form-data">
+            <div id="image_add" style="display: <?php echo (isset($image))? 'block':'none'; ?>" >
+                <?php if(isset($image) && is_array($image) && sizeof($image) > 0): ?>
+                <label id="after_image">Delete image</label>
+                <div class="slider-image-upload">
+                    <ul class="bxslider2">
+                        <?php foreach($image as $k=>$v): ?>
+                            <li class="remove_<?php echo $k ?>"><div class="box-image-container"><img style="width: 100px; height: 100px" src="<?php echo $v; ?>"><i data-id="<?php echo $k ?>" class="fa fa-trash"></i>
+                                <input type="text" name="image[]" hidden="true"  value="<?php echo $v; ?>" >
+                            </div></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <?php echo $form->render();?>
+        </form>
+    </div>
+    <div class="col-sm-6">
+        <label id="after_image">Select image</label>
+        <div id="fileuploader">Upload</div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        PRODUCT.tinymce();
+        PRODUCT.uploadfile();
+        $('.bxslider2').bxSlider({
+            maxSlides: 6,
+            minSlides: 1,
+            slideWidth: 100,
+            slideMargin: 5,
+            pager: false,
+        });
+    });
+</script>
+<link href="https://rawgithub.com/hayageek/jquery-upload-file/master/css/uploadfile.css" rel="stylesheet">
+<script src="https://rawgithub.com/hayageek/jquery-upload-file/master/js/jquery.uploadfile.min.js"></script>

@@ -1,0 +1,190 @@
+<div class="content-box">
+    <div class="search-category row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="col-md-12 box-search form-group" style="margin-left: -15px; padding-left: 0px">
+                <div class="col-xs-2" style="padding-right: 0px; margin-right: -18px;">
+                    <select class="form-control" style="padding-right: 0px; padding-left: 0px;">
+                        <option value="-1">User's post</option>
+                        <?php foreach($shop as $k=>$v):?>
+                            <option value="<?=$v->id ?>"><?php echo $v->domain; ?></option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+                <div class="col-xs-8">
+                    <input class="form-control" style="border-left: 1px dashed #ddd">
+                </div>
+                <div class="col-xs-1">
+                    <button class="btn btn-default">Search</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="category-filter">
+                <p class="text-uppercase"><strong>CATEGORY</strong></p>
+                <hr>
+                <ul>
+                <?php foreach($category as $k=>$v):?>
+                    <?php if($v['id_parent'] == 0):?>
+                    <li data-id="<?=$v['id'] ?>" class="li-category"><i class="fa fa-plus cursor-pointer" style="font-size: 10px; margin-right: 8px"></i><a class="" href="/category/<?=isset($v['slug'])?$v['slug']:'' ?>"><strong><?php echo strtoupper($v['title']); ?></strong></a>
+                        <div class="category-level1">
+                            <ul class="<?=$v['id']==$c?'showcate':'' ?>">
+                                <?php foreach($category as $k1=>$v1):?>
+                                    <?php if($v1['id_parent'] == $v['id']): ?>
+                                    <li class="li-category1"><a href="/category/<?=isset($v1['slug'])?$v1['slug']:'' ?>"><?=$v1['title'] ?></a>
+                                        <div class="category-level2">
+                                            <ul class="<?=$v1['id']==$c?'showcate':'' ?>">
+                                                <?php foreach($category as $k2=>$v2):?>
+                                                    <?php if($v2['id_parent'] == $v1['id']): ?>
+                                                        <li class="li-category2 <?=$v2['id']==$c?'showcate':'' ?>"><a style="font-size:12px" href="/category/<?=isset($v2['slug'])?$v2['slug']:'' ?>"><?=$v2['title'] ?></a>
+
+                                                        </li>
+                                                    <?php endif; ?>
+                                                <?php endforeach;?>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <?php endif; ?>
+                                <?php endforeach;?>
+                            </ul>
+                        </div>
+                    </li>
+                    <?php endif;?>
+                <?php endforeach;?>
+                </ul>
+            </div>
+            <hr>
+            <div class="shop-filter">
+                <p class="text-uppercase"><strong>FILTER by SHOP</strong></p>
+                <hr>
+                <ul>
+                    <?php foreach($shop as $k=>$v): ?>
+                        <li class="li-category1 filter-shop cursor-pointer" data-id="<?=$v->id ?>"><i class="fa <?php if($s==$v->id): ?>fa-check<?php else:?>fa-link<?php endif;?>"></i> <a <?php if(isset($url_clone_s)): ?>href="<?php echo $url_clone_s.'&s='.$v->id ?>" <?php endif;?>><?=$v->domain ?></a></li>
+                    <?php endforeach;?>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="label-category">
+                <a href="/">Home</a> <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                <?php if(isset($level4['title'])){?>
+                    <a href="/category/<?php echo $level4['slug']; ?>"><?php echo $level4['title'];?></a> <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                <?php }?>
+                <?php if(isset($level3['title'])){?>
+                    <a href="/category/<?php echo $level3['slug']; ?>"><?php echo $level3['title'];?></a> <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                <?php }?>
+                <?php if(isset($level2['title'])){?>
+                    <a href="/category/<?php echo $level2['slug']; ?>"><?php echo $level2['title'];?></a> <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                <?php }?>
+                <a href="/category/<?php echo $category_level->slug; ?>"><?php echo $category_level->title;?></a>
+            </div>
+            <hr>
+            <div class="clone-product">
+                <p><strong>SHOP's PRODUCTS</strong></p>
+                <hr>
+                <ul>
+                    <?php
+                        $n = count($productclone);
+                    ?>
+                    <?php for($i = 0; $i < $n; $i+=4):?>
+                    <li>
+                        <div class="row">
+                            <?php if(isset($productclone[$i]->title)):?>
+                            <div class="col-md-3">
+                                <a href="/product-clone/<?php echo isset($productclone[$i]->slug)?$productclone[$i]->slug:''; ?>">
+                                    <img src="<?php echo isset($productclone[$i]->image[0])?$productclone[$i]->image[0]:'' ?>" style="width:100%">
+                                    <h1><?php echo $productclone[$i]->title ?></h1>
+                                    <p>
+                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i]->content),100); ?>
+                                    </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i]->view)?$productclone[$i]->view:0 ?> view </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i]->created_at)):0 ?></p>
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                            <?php if(isset($productclone[$i+1]->title)):?>
+                            <div class="col-md-3">
+                                <a href="/product-clone/<?php echo isset($productclone[$i+1]->slug)?$productclone[$i+1]->slug:''; ?>">
+                                    <img src="<?php echo isset($productclone[$i+1]->image[0])?$productclone[$i+1]->image[0]:'' ?>" style="width:100%">
+                                    <h1><?php echo $productclone[$i+1]->title ?></h1>
+                                    <p>
+                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i+1]->content),100); ?>
+                                    </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i+1]->view)?$productclone[$i+1]->view:0 ?> view </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i+1]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i+1]->created_at)):0 ?></p>
+                                </a>
+                            </div>
+                            <?php endif;?>
+                            <?php if(isset($productclone[$i+2]->title)):?>
+                            <div class="col-md-3">
+                                <a href="/product-clone/<?php echo isset($productclone[$i+2]->slug)?$productclone[$i+2]->slug:''; ?>">
+                                    <img src="<?php echo isset($productclone[$i+2]->image[0])?$productclone[$i+2]->image[0]:'' ?>" style="width:100%">
+                                    <h1><?php echo $productclone[$i+2]->title ?></h1>
+                                    <p>
+                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i+2]->content),100); ?>
+                                    </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i+2]->view)?$productclone[$i+2]->view:0 ?> view </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i+2]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i+2]->created_at)):0 ?></p>
+                                </a>
+                            </div>
+                            <?php endif;?>
+                            <?php if(isset($productclone[$i+3]->title)):?>
+                            <div class="col-md-3">
+                                <a href="/product-clone/<?php echo isset($productclone[$i+3]->slug)?$productclone[$i+3]->slug:''; ?>">
+                                    <img src="<?php echo isset($productclone[$i+3]->image[0])?$productclone[$i+3]->image[0]:'' ?>" style="width:100%">
+                                    <h1><?php echo $productclone[$i+3]->title ?></h1>
+                                    <p>
+                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i+3]->content),100); ?>
+                                    </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i+3]->view)?$productclone[$i+3]->view:0 ?> view </p>
+                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i+3]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i+3]->created_at)):0 ?></p>
+                                </a>
+                            </div>
+                            <?php endif;?>
+                        </div>
+                    </li>
+                    <?php endfor;?>
+                </ul>
+                <div class="pagination">
+                    <?php echo $pagination_clone; ?>
+                </div>
+            </div>
+            <div class="user-product">
+                <p><strong>USER's PRODUCTS</strong></p>
+                <hr>
+                <ul>
+                    <?php foreach($productuser as $k=>$v):?>
+                        <li>
+                            <div class="row">
+                                <a href="/product-user/<?= isset($v->slug)?$v->slug:'';?>">
+                                    <div class="col-md-3"><img src="https://support.apple.com/library/content/dam/edam/applecare/images/en_US/iphone/iphone-iphone6plus-colors.jpg" style="width:100%"> </div>
+                                    <div class="col-md-7">
+                                        <h1><?php echo $v->title ?></h1>
+                                        <p>
+                                            <?php echo \App\Helpers\String::snippet(strip_tags($v->content),200); ?>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p><i class="fa fa-eye"></i> <?php echo isset($v->view)?$v->view:0 ?> view </p>
+                                        <p><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($v->created_at)?date('d/m/Y H:i:s',strtotime($v->created_at)):0 ?></p>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                    <?php endforeach;?>
+                </ul>
+                <div class="pagination">
+                    <?php echo $pagination_user; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.head .box-search').remove();
+</script>

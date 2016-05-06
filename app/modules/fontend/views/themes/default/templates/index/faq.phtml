@@ -1,0 +1,20 @@
+<div class="content-box">
+    <div style="margin-top: 50px; padding: 0px 10%">
+        <h1 style="font-size: 30px !important;text-align: center">FAQS</h1>
+        <hr>
+        <ul>
+            <?php foreach($faq as $k=>$v):?>
+            <li data-id="<?=$v->id ?>" class="li-category">
+                <i class="fa fa-plus cursor-pointer" style="font-size: 10px; margin-right: 8px"></i><?php echo $v->question;?>
+                <div class="category-level1">
+                    <?php echo $v->anser; ?>
+                </div>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
+
+<script>
+    $('.head .box-search').remove();
+</script>

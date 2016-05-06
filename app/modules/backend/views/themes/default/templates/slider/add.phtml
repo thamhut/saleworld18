@@ -1,0 +1,48 @@
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="oe-toptool">
+            <?php echo Phalcon\Tag::linkTo(array("/backend/slider/index", '<i class="fa fa-mail-reply"></i> '. $t->_('Back To List'), 'class' => 'btn btn-primary')); ?>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <form action="" method="post" enctype="multipart/form-data">
+            <label id="after_image">Select image</label>
+
+            <div id="fileuploader">Upload</div>
+            <input type="text" name="image" id="image" hidden="true" value="<?=isset($input['url'])?$input['url']:'' ?>">
+            <?php if(isset($input['url'])){ ?>
+                <img style="max-width: 395px; max-height: 395px" class="ajax-file-upload-statusbar" src="<?=$input['url'] ?>" >
+            <?php }?>
+            <select class="form-control" style="width: 400px" name="status">
+                <option <?php echo isset($input['status'])&&$input['status']=='1'?'selected':'' ?> value="1">Active</option>
+                <option <?php echo isset($input['status'])&&$input['status']=='0'?'selected':'' ?> value="0">Inactive</option>
+            </select>
+            <div id="box-footer" style="border-top:0px;" class="oe-form-box box-footer form-buttons col-md-12">
+                <div class="form-groups" style="width: 400px">
+                    <button type="submit" name="save" class=" btn btn-primary btn-submit">Save</button>
+                    <button type="reset" name="reset" class=" btn btn-warning">Reset</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $("#fileuploader").uploadFile({
+            url:"/backend/upload/index",
+            fileName:"myfile",
+            acceptFiles:"image/*",
+            showPreview:true,
+            onSuccess: function (files, response, xhr, pd) {
+                $('#image').val(response);
+            },
+            onSelect: function(){
+                $(".ajax-file-upload-statusbar").remove();
+            }
+        });
+    });
+</script>
+<link href="https://rawgithub.com/hayageek/jquery-upload-file/master/css/uploadfile.css" rel="stylesheet">
+<script src="https://rawgithub.com/hayageek/jquery-upload-file/master/js/jquery.uploadfile.min.js"></script>

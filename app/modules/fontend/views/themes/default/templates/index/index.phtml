@@ -1,0 +1,101 @@
+<?php echo $this->partial($layoutDir.'partials/slider'); ?>
+<div class="content-box">
+    <div class="content-box-1 row">
+        <div class="col-sm-4">
+            <div class="category-box">
+                <h3><a>Category</a></h3>
+                <ul class="lst-category">
+                    <?php foreach($category as $k=>$v):?>
+                        <?php if($v['id_parent'] == 0):?>
+                            <a href="/category/<?=isset($v['slug'])?$v['slug']:'';?>"><li id="tab<?php echo $k+1;?>"><?php echo $v['title'];?> <i class="fa fa-angle-right"></i> <div class="hide-border-right-lst"></div></li></a>
+
+                            <div class="lst-category-level tab<?php echo $k+1;?>" >
+                                <div class="row">
+                                    <?php foreach($category as $k1=>$v1):?>
+                                        <?php if($v1['id_parent'] == $v['id']): ?>
+                                            <div class="col-sm-6">
+                                                <div class="item-category-level">
+                                                    <h4>
+                                                        <a href="/category/<?=isset($v1['slug'])?$v1['slug']:'';?>"><?php echo $v1['title'];?></a>
+                                                    </h4>
+                                                    <ul>
+                                                        <?php foreach($category as $k2=>$v2):?>
+                                                            <?php if($v2['id_parent'] == $v1['id']): ?>
+                                                                <li><a href="/category/<?=isset($v2['slug'])?$v2['slug']:'' ?>"><?php echo $v2['title'];?></a></li>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        <?php endif;?>
+                                    <?php endforeach;?>
+                                </div>
+                            </div>
+                        <?php endif;?>
+                    <?php endforeach;?>
+                </ul>
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="category-box">adadadad</div>
+        </div>
+        <div class="col-sm-5">
+            <div class="menu-shop category-box">
+                <h3>Shop's List</h3>
+                <div id="box-list-shop" style="height: 330px">
+                    <ul>
+                        <?php foreach($shop as $k=>$v):?>
+                        <li><a href="/shop/<?=$v->id; ?>"><div><img style="width: 36px" src="<?php echo isset($v->logo)?$v->logo:'' ?>" /> <span><?php echo $v->name?></span></div></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box-2">
+        <div class="title-p-lst-home">
+            <h3 style="">
+                User's Products
+            </h3>
+            <span><a href="/product">view</a></span>
+        </div>
+        <ul class="bxslider2">
+            <?php foreach($productuser as $k=>$v):?>
+            <li class="bxslider-inner" ><a href="/product-user/<?php echo isset($v->slug)?$v->slug:''; ?>"><div class="item-shop"><img style="height: 260px" src="<?php echo \App\Helpers\App::resize_image(180, 260, isset($v->image[0])?$v->image[0]:'')?>"  /><div class="item-info"><a><?php echo $v->title;?></a></div></div></a></li>
+            <?php endforeach;?>
+        </ul>
+    </div>
+    <br>
+    <br>
+
+    <div class="content-box-3">
+        <div class="title-p-lst-home">
+            <h3 style="">
+                Shop's Products
+            </h3>
+        </div>
+        <ul class="bxslider2">
+            <?php foreach($productclone as $k=>$v):?>
+            <li class="bxslider-inner" ><div class="item-shop"><img style="height: 200px" src="<?php echo \App\Helpers\App::resize_image(160,200,isset($v->image[0])?$v->image[0]:'');?>"  /><div class="item-info"><a href="/product-clone/<?php echo isset($v->slug)?$v->slug:''; ?>"><?php echo $v->title;?></a></div></div></li>
+            <?php endforeach;?>
+        </ul>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function(){
+        $('.content-box-2 .bxslider2, .content-box-3 .bxslider2').bxSlider({
+            maxSlides: 6,
+            minSlides: 6,
+            slideWidth: 200,
+            slideMargin: 10,
+            pager: false,
+            infiniteLoop: false,
+            hideControlOnEnd: true
+        });
+    });
+    $("#box-list-shop").mCustomScrollbar();
+</script>
