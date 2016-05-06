@@ -25,10 +25,11 @@
       <file leaf-file-name="CloneController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/modules/backend/controllers/CloneController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.52819335">
-              <caret line="88" column="5" selection-start-line="88" selection-start-column="5" selection-end-line="88" selection-end-column="5" />
+            <state vertical-scroll-proportion="0.5144737">
+              <caret line="299" column="33" selection-start-line="299" selection-start-column="33" selection-end-line="299" selection-end-column="33" />
               <folding>
-                <marker date="1462520734623" expanded="true" signature="10607:11400" placeholder="..." />
+                <element signature="e#4531#5165#0#PHP" expanded="false" />
+                <marker date="1462525490918" expanded="true" signature="11786:13977" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -120,10 +121,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="151" />
-    <option name="y" value="66" />
+    <option name="x" value="584" />
+    <option name="y" value="71" />
     <option name="width" value="1706" />
-    <option name="height" value="1056" />
+    <option name="height" value="1004" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -722,10 +723,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="151" y="66" width="1706" height="1056" extended-state="0" />
+    <frame x="584" y="71" width="1706" height="1004" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35844472" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2454435" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24969624" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -1116,10 +1117,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/modules/backend/controllers/CloneController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52819335">
-          <caret line="88" column="5" selection-start-line="88" selection-start-column="5" selection-end-line="88" selection-end-column="5" />
+        <state vertical-scroll-proportion="0.5144737">
+          <caret line="299" column="33" selection-start-line="299" selection-start-column="33" selection-end-line="299" selection-end-column="33" />
           <folding>
-            <marker date="1462520734623" expanded="true" signature="10607:11400" placeholder="..." />
+            <element signature="e#4531#5165#0#PHP" expanded="false" />
+            <marker date="1462525490918" expanded="true" signature="11786:13977" placeholder="..." />
           </folding>
         </state>
       </provider>

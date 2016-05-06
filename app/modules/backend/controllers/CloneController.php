@@ -24,10 +24,19 @@ class CloneController extends BaseController
     public $content;
     public $oldprice;
     public $newprice;
+    public $idp;
+    public $link;
     public $image=array();
     public function testAction(){
         set_time_limit(0);
-        $this->sephora('http://www.sephora.com/search/saleResults.jsp?keyword=Sale&topNav=true&sale=true&node=1050000&pageSize=-1','http://www.sephora.com');
+        $this->mapcate_website();
+    }
+
+    public function fix(){
+        $clone = ProductClone::find(array('columns'=>'image'));
+        foreach($clone as $item){
+            unlink($item->image[0]);
+        }
     }
 
     public function savedata(){
@@ -57,32 +66,24 @@ class CloneController extends BaseController
                 foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->forever21($item_link->link, $item->domain);
-
-                    exit();
                 }
             }
             elseif(strpos($item->domain, 'levi.com') !== false){
                 foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->levi($item_link->link, $item->domain);
-
-                    exit();
                 }
             }
             elseif(strpos($item->domain, 'lacoste.com') !== false){
                 foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->lacoste($item_link->link, $item->domain);
-
-                    exit();
                 }
             }
             elseif(strpos($item->domain, 'sephora.com') !== false){
                 foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->sephora($item_link->link, $item->domain);
-
-                    exit();
                 }
             }
         }
@@ -91,19 +92,40 @@ class CloneController extends BaseController
     public function sephora($urlcate, $domain){
         set_time_limit(0);
         $content = new htmldom;
-        $content_cate = $content->str_get_html($this->file_get_contents_curl(($urlcate)));
-        echo $content_cate;die;
-        foreach ($content_cate->find('div.SkuGrid a.SkuItem') as $plink) {
-            if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
-                $this->sephora_detail($plink->href);
+        $content_cate = $content->str_get_html($this->get_fcontentByGoogle(($urlcate)));
+        $json = '';
+        foreach ($content_cate->find('script#searchResult') as $plink) {
+            $json = strip_tags($plink);
+            break;
+        }
+        $json = json_decode($json);
+        foreach ($json->products as $product) {
+            $this->idp = str_replace('P','',$product->id);
+            $link = $domain.$product->product_url;
+            if(!$this->checkProduct($link, $domain)){
+                $this->title = $product->display_name;
+                $this->oldprice = isset($product->derived_sku->list_price_max)?$product->derived_sku->list_price_max:(isset($product->derived_sku->list_price)?$product->derived_sku->list_price:0);
+                $this->newprice = isset($product->derived_sku->list_price_min)?$product->derived_sku->list_price_min:(isset($product->derived_sku->sale_price)?$product->derived_sku->sale_price:0);
+                $src = $domain.$product->hero_image;
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($src);
+                $this->image = array();
+                $this->image[] = $upload;
+                $this->link = $link;
+                $this->sephora_detail($link);
             }
         }
     }
 
     public function sephora_detail($link){
-        echo '<pre>';
-        print_r($link);
-        die;
+        set_time_limit(0);
+        $content = new htmldom;
+        $content = $content->str_get_html($this->get_fcontentByGoogle($link));
+        foreach($content->find('div.long-description') as $item){
+            $this->content = htmlentities($item);
+            break;
+        }
+        $this->savedata();
     }
 
 
@@ -113,7 +135,7 @@ class CloneController extends BaseController
         //while(1)
         {
             $content = new htmldom;
-            $content_cate = $content->str_get_html($this->file_get_contents_curl(($urlcate)));
+            $content_cate = $content->str_get_html($this->get_fcontentByGoogle(($urlcate)));
 
             if($content_cate->find('span.product-name a')) {
                 foreach ($content_cate->find('span.product-name a') as $plink) {
@@ -129,7 +151,7 @@ class CloneController extends BaseController
     public function lacoste_detail($link){
         set_time_limit(0);
         $content = new htmldom;
-        $content = $content->str_get_html($this->file_get_contents_curl($link));
+        $content = $content->str_get_html($this->get_fcontentByGoogle($link));
         foreach($content->find('h1.sku-product-name') as $item){
             $this->title = trim(strip_tags($item));
         }
@@ -178,7 +200,7 @@ class CloneController extends BaseController
         set_time_limit(0);
         $content = new htmldom;
         $start = 12;
-        $content_cate = $content->str_get_html($this->file_get_contents_curl($urlcate));
+        $content_cate = $content->str_get_html($this->get_fcontentByGoogle($urlcate));
         foreach ($content_cate->find('ul#container_results li.product-tile div.product-details a') as $plink) {
             if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
                 $this->levi_detail($domain . $plink->href);
@@ -188,7 +210,7 @@ class CloneController extends BaseController
             $url_s = str_replace($domain,'',$urlcate);
             $url = 'http://www.levi.com/US/en_US/includes/searchResultsScroll/';
             $url .= '?nao='.$start.'&'.'url='.$url_s;
-            $content_cate = $content->str_get_html($this->file_get_contents_curl($url));
+            $content_cate = $content->str_get_html($this->get_fcontentByGoogle($url));
             if($content_cate->find('div.product-details a')){
                 foreach ($content_cate->find('div.product-details a') as $plink) {
                     if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
@@ -206,7 +228,7 @@ class CloneController extends BaseController
     public function levi_detail($link){
         set_time_limit(0);
         $content = new htmldom;
-        $content = $this->file_get_contents_curl($link);
+        $content = $this->get_fcontentByGoogle($link);
         preg_match('/(\/p\/)(.*)()/',$link,$matches);
         $id = isset($matches[2])?$matches[2]:0;
         $arr = explode("buyStackJSON = '", htmlentities($content));
@@ -234,7 +256,7 @@ class CloneController extends BaseController
         while(1)
         {
             $content = new htmldom;
-            $content_cate = $content->str_get_html($this->file_get_contents_curl($urlcate.'&pagesize=60&page='.$page));
+            $content_cate = $content->str_get_html($this->get_fcontentByGoogle($urlcate.'&pagesize=60&page='.$page));
             if($content_cate->find('div.product_item div.item_pic a')) {
                 foreach ($content_cate->find('div.product_item div.item_pic a') as $plink) {
                     if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
@@ -251,7 +273,7 @@ class CloneController extends BaseController
     public function forever21_detail($url_detail){
         set_time_limit(0);
         $content = new htmldom;
-        $content = $content->str_get_html($this->file_get_contents_curl($url_detail));
+        $content = $content->str_get_html($this->get_fcontentByGoogle($url_detail));
         foreach($content->find('h1.item_name_p') as $title){
             $this->title = trim(strip_tags($title));
             break;
@@ -275,6 +297,7 @@ class CloneController extends BaseController
             $this->content = htmlentities($item);
             break;
         }
+        $this->link = $url_detail;
         $this->savedata();
     }
 
@@ -294,11 +317,7 @@ class CloneController extends BaseController
             $linkDetail = $link;
         }
         if(strpos($domain, 'sephora.com') !== false){
-            preg_match('/(-P)(.*)(?)/',$link,$matches);
-            $id = isset($matches[2])?$matches[2]:0;
-            echo '<pre>';
-            print_r($matches);
-            die;
+            $id = $this->idp;
         }
         if($id != 0) {
             $link_check = Links::findFirst(array(array('id_product' => (int)$id), 'domain' => $domain));
@@ -315,5 +334,38 @@ class CloneController extends BaseController
             $add->save();
             return false;
         }
+    }
+
+    function get_fcontentByGoogle($url,$fields_string = array()) {
+        set_time_limit(0);
+        $url = str_replace("&amp;", "&", urldecode(trim($url)));
+        (function_exists('curl_init')) ? '' : die('cURL Must be installed. Ask your host to enable it or uncomment extension=php_curl.dll in php.ini');
+        $curl = curl_init();
+        $header[0] = "Accept: text/xml,application/xml,application/xhtml+xml,";
+        $header[0] .= "text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5";
+        $header[] = "Cache-Control: max-age=0";
+        $header[] = "Connection: keep-alive";
+        $header[] = "Keep-Alive: 300";
+        $header[] = "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7";
+        $header[] = "Accept-Language: en-us,en;q=0.5";
+        $header[] = "Pragma: ";
+        $header[] = "Content-type: multipart/form-data; ";
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        //curl_setopt($curl, CURLOPT_HEADER, 1);
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Googlebot/2.1 (+http://www.google.com/bot.html)');
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_REFERER, 'http://www.google.com');
+        curl_setopt($curl, CURLOPT_ENCODING, 'gzip,deflate');
+        curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $fields_string);
+
+        $html = curl_exec($curl);
+
+        curl_close($curl);
+
+        return $html;
     }
 }
