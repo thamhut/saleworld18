@@ -62,11 +62,16 @@ class ProductController extends BaseController
         $model = new Product();
         $arrImage = array();
         if($this->request->get('id')) {
-            $model = $model->findFirst(array('id' => $this->request->get('id')));
+            $model = $model->findFirst(array(
+                array(
+                    '_id' => new \MongoId($this->request->get('id'))
+                )
+            ));
             $arrImage = $model->image;
         }
         $form = new ProductForm($model);
         if($this->request->isPost()) {
+            $arrImage = array();
             $image = $_POST['image'];
             if(isset($image) && is_array($image)) {
                 foreach ($image as $item) {
@@ -82,14 +87,15 @@ class ProductController extends BaseController
                     $data_insert['slug'] = String::slug($data_insert['title'] );
                     foreach($data_insert as $k=>$v)
                     {
-                        if(is_numeric($v) && is_int($v)){
+                        if($k == 'idcate' || $k == 'status'){
                             $v = (int)$v;
                         }
-                        if(is_numeric($v) && is_float($v)){
+                        if($k == 'oldprice' || $k == 'newprice'){
                             $v = (float)$v;
                         }
                         $model->$k = $v;
                     }
+                    $model->created_at = date('Y-m-d H:i:s');
                     if($model->save()) {
                         $this->flashSession->success($this->_("Register product successfully"));
                         return $this->redirect('index');

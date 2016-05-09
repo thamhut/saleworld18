@@ -58,6 +58,19 @@
                 </ul>
             </div>
             <hr>
+            <br>
+            <div>
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- saleworld18_category_left -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-3431173096387405"
+                     data-ad-slot="4786003976"
+                     data-ad-format="auto"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
         </div>
         <div class="col-md-8">
             <div class="label-category">
@@ -75,20 +88,20 @@
             </div>
             <hr>
             <div class="clone-product">
-                <p><strong>USER's PRODUCTS</strong></p>
+                <p><strong>SHOP's PRODUCTS</strong></p>
                 <hr>
-                <ul>
+                <ul itemscope itemtype="http://schema.org/BreadcrumbList">
                     <?php
                     $n = count($productclone);
                     ?>
                     <?php for($i = 0; $i < $n; $i+=4):?>
-                        <li>
+                        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                             <div class="row">
                                 <?php if(isset($productclone[$i]->title)):?>
-                                    <div class="col-md-3">
-                                        <a href="/product-user/<?php echo isset($productclone[$i]->slug)?$productclone[$i]->slug:''; ?>">
-                                            <img src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i]->image[0])?$productclone[$i]->image[0]:'') ?>" style="width:100%">
-                                            <h1><?php echo \App\Helpers\String::snippet($productclone[$i]->title, 30); ?></h1>
+                                    <div class="col-md-3" itemprop="item">
+                                        <a itemprop="url" title="<?php echo $productclone[$i]->title;?>" href="/product-clone/<?php echo isset($productclone[$i]->slug)?$productclone[$i]->slug:''; ?>">
+                                            <img itemprop="image" alt="<?php echo $productclone[$i]->title;?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i]->image[0])?$productclone[$i]->image[0]:'') ?>" style="width:100%">
+                                            <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i]->title, 30) ?></h1>
                                             <div class="box-eye-detail">
                                                 <p>
                                                     <i class="fa fa-eye" aria-hidden="true"></i> View detail
@@ -98,10 +111,10 @@
                                     </div>
                                 <?php endif; ?>
                                 <?php if(isset($productclone[$i+1]->title)):?>
-                                    <div class="col-md-3">
-                                        <a href="/product-user/<?php echo isset($productclone[$i+1]->slug)?$productclone[$i+1]->slug:''; ?>">
-                                            <img src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+1]->image[0])?$productclone[$i+1]->image[0]:'') ?>" style="width:100%">
-                                            <h1><?php echo \App\Helpers\String::snippet($productclone[$i+1]->title, 30) ?></h1>
+                                    <div class="col-md-3" itemprop="item">
+                                        <a itemprop="url" title="<?php echo $productclone[$i+1]->title;?>" href="/product-clone/<?php echo isset($productclone[$i+1]->slug)?$productclone[$i+1]->slug:''; ?>">
+                                            <img itemprop="image" alt="<?php echo $productclone[$i+1]->title;?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+1]->image[0])?$productclone[$i+1]->image[0]:'') ?>" style="width:100%">
+                                            <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i+1]->title, 30) ?></h1>
                                             <div class="box-eye-detail">
                                                 <p>
                                                     <i class="fa fa-eye" aria-hidden="true"></i> View detail
@@ -111,10 +124,10 @@
                                     </div>
                                 <?php endif;?>
                                 <?php if(isset($productclone[$i+2]->title)):?>
-                                    <div class="col-md-3">
-                                        <a href="/product-user/<?php echo isset($productclone[$i+2]->slug)?$productclone[$i+2]->slug:''; ?>">
-                                            <img src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+2]->image[0])?$productclone[$i+2]->image[0]:'') ?>" style="width:100%">
-                                            <h1><?php echo \App\Helpers\String::snippet($productclone[$i+2]->title, 30) ?></h1>
+                                    <div class="col-md-3" itemprop="item">
+                                        <a itemprop="url" title="<?php echo $productclone[$i+2]->title;?>" href="/product-clone/<?php echo isset($productclone[$i+2]->slug)?$productclone[$i+2]->slug:''; ?>">
+                                            <img itemprop="image" alt="<?php echo $productclone[$i+2]->title;?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+2]->image[0])?$productclone[$i+2]->image[0]:'') ?>" style="width:100%">
+                                            <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i+2]->title, 30) ?></h1>
                                             <div class="box-eye-detail">
                                                 <p>
                                                     <i class="fa fa-eye" aria-hidden="true"></i> View detail
@@ -124,10 +137,10 @@
                                     </div>
                                 <?php endif;?>
                                 <?php if(isset($productclone[$i+3]->title)):?>
-                                    <div class="col-md-3">
-                                        <a href="/product-user/<?php echo isset($productclone[$i+3]->slug)?$productclone[$i+3]->slug:''; ?>">
-                                            <img src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+3]->image[0])?$productclone[$i+3]->image[0]:'') ?>" style="width:100%">
-                                            <h1><?php echo \App\Helpers\String::snippet($productclone[$i+3]->title, 30) ?></h1>
+                                    <div class="col-md-3" itemprop="item">
+                                        <a itemprop="url" title="<?php echo $productclone[$i+3]->title;?>" href="/product-clone/<?php echo isset($productclone[$i+3]->slug)?$productclone[$i+3]->slug:''; ?>">
+                                            <img itemprop="image" alt="<?php echo $productclone[$i+3]->title;?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+3]->image[0])?$productclone[$i+3]->image[0]:''); ?>" style="width:100%">
+                                            <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i+3]->title, 30) ?></h1>
                                             <div class="box-eye-detail">
                                                 <p>
                                                     <i class="fa fa-eye" aria-hidden="true"></i> View detail
@@ -144,6 +157,30 @@
                     <?php echo $pagination_clone; ?>
                 </div>
             </div>
+        </div>
+        <div class="col-md-2">
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- saleworld18_category_right1 -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3431173096387405"
+                 data-ad-slot="6262737178"
+                 data-ad-format="auto"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            <br>
+            <br>
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- saleworld18_category_right2 -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3431173096387405"
+                 data-ad-slot="1692936773"
+                 data-ad-format="auto"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
         </div>
     </div>
 </div>

@@ -190,4 +190,5 @@ return array (
   'backend_breadcrumb_faq' => 'backend breadcrumb faq',
   'About us' => 'About us',
   'backend_breadcrumb_clone' => 'backend breadcrumb clone',
+  'Sale world' => 'Sale world',
 );

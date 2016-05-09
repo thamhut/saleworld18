@@ -11,7 +11,8 @@ use Phalcon\Mvc\View;
 class BaseController extends Application\Controller {
 	
 	public function initialize(){
-		$this->tag->SetTitle($this->_("common_title"));
+		$data['meta_title'] = 'saleworld18 - the site aggregate product deal, sale off of the all shop in usa';
+		$data['meta_content'] = 'Website aggregate product deal, sale off of the all shop in usa, include clothes, fashion and Cosmetics, Beauty Products, Fragrances & Tools and shop forever21, levi, sephora, lacoste,...';
 		//Add some local CSS resources
 		$this->assets->addCss('/public/skin/common/libs/myriad-pro/css/common.css');
 		$this->assets->addCss('/public/skin/fontend/css/common.css');
@@ -44,7 +45,7 @@ class BaseController extends Application\Controller {
     
     public function onConstruct() {
     	parent::onConstruct();
-    	Phalcon\Tag::setTitle('Kiss Movies CPanel');
+    	Phalcon\Tag::setTitle('Sale World');
     	
     	if($this->request->isPost() && $this->request->isAjax() && $this->request->getPost('ajaxRenderLevel') == View::LEVEL_NO_RENDER) {
     		$this->view->disable();

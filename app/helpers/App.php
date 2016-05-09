@@ -31,6 +31,9 @@ class App extends Object {
 		}
 		$src = str_replace('/uploads/','uploads/',$src);
 		$src = '../public/'.$src;
+		if(!file_exists($src) || !exif_imagetype($src)){
+			$src = '../public/uploads/images/2016/03/noimage.jpg';
+		}
 		$img_src = getimagesize($src);
 		$width = $src_w = $img_src[0];
 		$height = $src_h = $img_src[1];

@@ -2,7 +2,7 @@
 <div class="content-box">
     <div class="content-box-1 row">
         <div class="col-sm-4">
-            <div class="category-box">
+            <div class="category-box" id="box-list-category">
                 <h3><a>Category</a></h3>
                 <ul class="lst-category">
                     <?php foreach($category as $k=>$v):?>
@@ -13,7 +13,7 @@
                                 <div class="row">
                                     <?php foreach($category as $k1=>$v1):?>
                                         <?php if($v1['id_parent'] == $v['id']): ?>
-                                            <div class="col-sm-6">
+                                            <div class="col-md-6">
                                                 <div class="item-category-level">
                                                     <h4>
                                                         <a href="/category/<?=isset($v1['slug'])?$v1['slug']:'';?>"><?php echo $v1['title'];?></a>
@@ -38,7 +38,18 @@
             </div>
         </div>
         <div class="col-sm-3">
-            <div class="category-box">adadadad</div>
+            <div class="category-box">
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- saleworld18_home -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-3431173096387405"
+                     data-ad-slot="2251339972"
+                     data-ad-format="auto"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
         </div>
         <div class="col-sm-5">
             <div class="menu-shop category-box">
@@ -54,34 +65,55 @@
         </div>
     </div>
 
-    <div class="content-box-2">
-        <div class="title-p-lst-home">
-            <h3 style="">
-                User's Products
-            </h3>
-            <span><a href="/product">view</a></span>
-        </div>
-        <ul class="bxslider2">
-            <?php foreach($productuser as $k=>$v):?>
-            <li class="bxslider-inner" ><a href="/product-user/<?php echo isset($v->slug)?$v->slug:''; ?>"><div class="item-shop"><img style="height: 260px" src="<?php echo \App\Helpers\App::resize_image(180, 260, isset($v->image[0])?$v->image[0]:'')?>"  /><div class="item-info"><?php echo $v->title;?></div></div></a></li>
-            <?php endforeach;?>
-        </ul>
-    </div>
-    <br>
-    <br>
-
     <div class="content-box-3">
         <div class="title-p-lst-home">
             <h3 style="">
                 Shop's Products
             </h3>
         </div>
-        <ul class="bxslider2">
+        <ul class="bxslider2" itemscope itemtype="http://schema.org/BreadcrumbList">
             <?php foreach($productclone as $k=>$v):?>
-            <li class="bxslider-inner" ><a href="/product-clone/<?php echo isset($v->slug)?$v->slug:''; ?>"><div class="item-shop"><img style="height: 200px" src="<?php echo \App\Helpers\App::resize_image(160,200,isset($v->image[0])?$v->image[0]:'');?>"  /><div class="item-info"><?php echo $v->title;?></div></div></a></li>
+                <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="bxslider-inner" >
+                    <div itemprop="item" class="item-shop">
+                        <a itemprop="url" title="<?= $v->title;?>" href="/product-clone/<?php echo isset($v->slug)?$v->slug:''; ?>">
+                            <img itemprop="image" alt="<?= $v->title;?>" style="height: 200px" src="<?php echo \App\Helpers\App::resize_image(160,200,isset($v->image[0])?$v->image[0]:'');?>"  />
+                            <div class="item-info" itemprop="name"><?php echo $v->title;?><p><?php echo 'view...'; ?></p></div></a></div></li>
             <?php endforeach;?>
         </ul>
     </div>
+    <br>
+    <br>
+    <div class="text-center">
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- saleworld18_home2 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-3431173096387405"
+             data-ad-slot="6402337970"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+    <br>
+    <br>
+    <?php if(isset($productuser) && sizeof($productuser) > 0):?>
+        <div class="content-box-2">
+            <div class="title-p-lst-home">
+                <h3 style="">
+                    User's Products
+                </h3>
+                <span><a href="/product">view</a></span>
+            </div>
+            <ul class="bxslider2" itemscope itemtype="http://schema.org/BreadcrumbList">
+                <?php foreach($productuser as $k=>$v):?>
+                    <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="bxslider-inner" >
+                        <a itemprop="url" title="<?= $v->title;?>" href="/product-user/<?php echo isset($v->slug)?$v->slug:''; ?>">
+                            <div class="item-shop"><img itemprop="image" alt="<?= $v->title;?>" style="height: 260px" src="<?php echo \App\Helpers\App::resize_image(180, 260, isset($v->image[0])?$v->image[0]:'')?>"  />
+                                <div class="item-info" itemprop="name"><?php echo $v->title;?><p><?php echo 'view...'; ?></p></div></div></a></li>
+                <?php endforeach;?>
+            </ul>
+        </div>
+    <?php endif;?>
 </div>
 
 
@@ -97,5 +129,5 @@
             hideControlOnEnd: true
         });
     });
-    $("#box-list-shop").mCustomScrollbar();
+    $("#box-list-shop, .lst-category-level").mCustomScrollbar();
 </script>

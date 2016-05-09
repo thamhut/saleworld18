@@ -11,7 +11,7 @@ class Module extends \OE\Application\Module {
 	
 	public function init() {
 		//$this->setTheme('custom');
-		$this->setLayout('main');
+		//$this->setLayout('main');
 		//$this->setViewEngine('volt');
 	}
 	

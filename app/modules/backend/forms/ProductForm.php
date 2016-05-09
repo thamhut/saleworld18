@@ -14,6 +14,7 @@ use App\Modules\Backend\Models\CmsCategory;
 use OE\Widget\Form;
 use OE\Widget\Form\Element\Select;
 use OE\Widget\Form\Element\Text;
+use OE\Widget\Form\Element\TextArea;
 use OE\Widget\Form\Group;
 use Phalcon\Validation\Validator\Numericality;
 use Phalcon\Validation\Validator\PresenceOf;
@@ -47,7 +48,7 @@ class ProductForm extends Form
             'message' => $this->_('%n% is a url', array('n' => 'link'))
         )));
 
-        $content = new Text('content');
+        $content = new TextArea('content');
         $content->setLabel($this->_('content'));
 
         $oldprice = new Text('oldprice');

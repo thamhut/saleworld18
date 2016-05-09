@@ -61,11 +61,24 @@
             <div class="shop-filter">
                 <p class="text-uppercase"><strong>FILTER by SHOP</strong></p>
                 <hr>
-                <ul>
+                <ul itemscope itemtype="http://schema.org/BreadcrumbList">
                     <?php foreach($shop as $k=>$v): ?>
-                        <li class="li-category1 filter-shop cursor-pointer" data-id="<?=$v->id ?>"><i class="fa <?php if($s==$v->id): ?>fa-check<?php else:?>fa-link<?php endif;?>"></i> <a <?php if(isset($url_clone_s)): ?>href="<?php echo $url_clone_s.'&s='.$v->id ?>" <?php endif;?>><?=$v->domain ?></a></li>
+                        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="li-category1 filter-shop cursor-pointer" data-id="<?=$v->id ?>"><i class="fa <?php if($s==$v->id): ?>fa-check<?php else:?>fa-link<?php endif;?>"></i> <a itemprop="item" <?php if(isset($url_clone_s)): ?>href="<?php echo $url_clone_s.'&s='.$v->id ?>" <?php endif;?>><?=$v->domain ?></a></li>
                     <?php endforeach;?>
                 </ul>
+            </div>
+            <br>
+            <div>
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- saleworld18_category_left -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-3431173096387405"
+                     data-ad-slot="4786003976"
+                     data-ad-format="auto"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
             </div>
         </div>
         <div class="col-md-8">
@@ -86,62 +99,62 @@
             <div class="clone-product">
                 <p><strong>SHOP's PRODUCTS</strong></p>
                 <hr>
-                <ul>
+                <ul itemscope itemtype="http://schema.org/BreadcrumbList">
                     <?php
                         $n = count($productclone);
                     ?>
                     <?php for($i = 0; $i < $n; $i+=4):?>
-                    <li>
+                    <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                         <div class="row">
                             <?php if(isset($productclone[$i]->title)):?>
-                            <div class="col-md-3">
-                                <a href="/product-clone/<?php echo isset($productclone[$i]->slug)?$productclone[$i]->slug:''; ?>">
-                                    <img src="<?php echo isset($productclone[$i]->image[0])?$productclone[$i]->image[0]:'' ?>" style="width:100%">
-                                    <h1><?php echo $productclone[$i]->title ?></h1>
-                                    <p>
-                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i]->content),100); ?>
-                                    </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i]->view)?$productclone[$i]->view:0 ?> view </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i]->created_at)):0 ?></p>
+                            <div class="col-md-3" itemprop="item" >
+                                <a itemprop="url" title="<?php echo $productclone[$i]->title; ?>" href="/product-clone/<?php echo isset($productclone[$i]->slug)?$productclone[$i]->slug:''; ?>">
+                                    <img itemprop="image" alt="<?php echo $productclone[$i]->title; ?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i]->image[0])?$productclone[$i]->image[0]:''); ?>" style="width:100%">
+                                    <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i]->title, 30); ?></h1>
+                                    <div class="box-eye-detail">
+                                        <p>
+                                            <i class="fa fa-eye" aria-hidden="true"></i> View detail
+                                        </p>
+                                    </div>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if(isset($productclone[$i+1]->title)):?>
-                            <div class="col-md-3">
-                                <a href="/product-clone/<?php echo isset($productclone[$i+1]->slug)?$productclone[$i+1]->slug:''; ?>">
-                                    <img src="<?php echo isset($productclone[$i+1]->image[0])?$productclone[$i+1]->image[0]:'' ?>" style="width:100%">
-                                    <h1><?php echo $productclone[$i+1]->title ?></h1>
-                                    <p>
-                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i+1]->content),100); ?>
-                                    </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i+1]->view)?$productclone[$i+1]->view:0 ?> view </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i+1]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i+1]->created_at)):0 ?></p>
+                            <div class="col-md-3" itemprop="item">
+                                <a itemprop="url" title="<?php echo $productclone[$i+1]->title; ?>" href="/product-clone/<?php echo isset($productclone[$i+1]->slug)?$productclone[$i+1]->slug:''; ?>">
+                                    <img itemprop="image" alt="<?php echo $productclone[$i+1]->title; ?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+1]->image[0])?$productclone[$i+1]->image[0]:''); ?>" style="width:100%">
+                                    <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i+1]->title, 30); ?></h1>
+                                    <div class="box-eye-detail">
+                                        <p>
+                                            <i class="fa fa-eye" aria-hidden="true"></i> View detail
+                                        </p>
+                                    </div>
                                 </a>
                             </div>
                             <?php endif;?>
                             <?php if(isset($productclone[$i+2]->title)):?>
-                            <div class="col-md-3">
-                                <a href="/product-clone/<?php echo isset($productclone[$i+2]->slug)?$productclone[$i+2]->slug:''; ?>">
-                                    <img src="<?php echo isset($productclone[$i+2]->image[0])?$productclone[$i+2]->image[0]:'' ?>" style="width:100%">
-                                    <h1><?php echo $productclone[$i+2]->title ?></h1>
-                                    <p>
-                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i+2]->content),100); ?>
-                                    </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i+2]->view)?$productclone[$i+2]->view:0 ?> view </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i+2]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i+2]->created_at)):0 ?></p>
+                            <div class="col-md-3" itemprop="item">
+                                <a itemprop="url" title="<?php echo $productclone[$i+2]->title; ?>" href="/product-clone/<?php echo isset($productclone[$i+2]->slug)?$productclone[$i+2]->slug:''; ?>">
+                                    <img itemprop="image" alt="<?php echo $productclone[$i+2]->title; ?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+2]->image[0])?$productclone[$i+2]->image[0]:'') ?>" style="width:100%">
+                                    <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i+2]->title, 30); ?></h1>
+                                    <div class="box-eye-detail">
+                                        <p>
+                                            <i class="fa fa-eye" aria-hidden="true"></i> View detail
+                                        </p>
+                                    </div>
                                 </a>
                             </div>
                             <?php endif;?>
                             <?php if(isset($productclone[$i+3]->title)):?>
-                            <div class="col-md-3">
-                                <a href="/product-clone/<?php echo isset($productclone[$i+3]->slug)?$productclone[$i+3]->slug:''; ?>">
-                                    <img src="<?php echo isset($productclone[$i+3]->image[0])?$productclone[$i+3]->image[0]:'' ?>" style="width:100%">
-                                    <h1><?php echo $productclone[$i+3]->title ?></h1>
-                                    <p>
-                                        <?php echo \App\Helpers\String::snippet(strip_tags($productclone[$i+3]->content),100); ?>
-                                    </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-eye"></i> <?php echo isset($productclone[$i+3]->view)?$productclone[$i+3]->view:0 ?> view </p>
-                                    <p style=" font-size: 11px;opacity: 0.6;"><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($productclone[$i+3]->created_at)?date('d/m/Y H:i:s',strtotime($productclone[$i+3]->created_at)):0 ?></p>
+                            <div class="col-md-3" itemprop="item">
+                                <a itemprop="url" title="<?php echo $productclone[$i+3]->title; ?>" href="/product-clone/<?php echo isset($productclone[$i+3]->slug)?$productclone[$i+3]->slug:''; ?>">
+                                    <img itemprop="image" alt="<?php echo $productclone[$i+3]->title; ?>" src="/<?php echo \App\Helpers\App::resize_image(165,250,isset($productclone[$i+3]->image[0])?$productclone[$i+3]->image[0]:'') ?>" style="width:100%">
+                                    <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($productclone[$i+3]->title, 30); ?></h1>
+                                    <div class="box-eye-detail">
+                                        <p>
+                                            <i class="fa fa-eye" aria-hidden="true"></i> View detail
+                                        </p>
+                                    </div>
                                 </a>
                             </div>
                             <?php endif;?>
@@ -156,21 +169,21 @@
             <div class="user-product">
                 <p><strong>USER's PRODUCTS</strong></p>
                 <hr>
-                <ul>
+                <ul itemscope itemtype="http://schema.org/BreadcrumbList">
                     <?php foreach($productuser as $k=>$v):?>
-                        <li>
-                            <div class="row">
-                                <a href="/product-user/<?= isset($v->slug)?$v->slug:'';?>">
-                                    <div class="col-md-3"><img src="https://support.apple.com/library/content/dam/edam/applecare/images/en_US/iphone/iphone-iphone6plus-colors.jpg" style="width:100%"> </div>
+                        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                            <div class="row" itemprop="item">
+                                <a itemprop="url" title="<?php echo $v->title;?>" href="/product-user/<?= isset($v->slug)?$v->slug:'';?>">
+                                    <div class="col-md-3"><img itemprop="image" alt="<?php echo $v->title;?>" src="/<?php echo \App\Helpers\App::resize_image(100,150,$v->image[0]) ?>" style="width:100%"> </div>
                                     <div class="col-md-7">
-                                        <h1><?php echo $v->title ?></h1>
-                                        <p>
-                                            <?php echo \App\Helpers\String::snippet(strip_tags($v->content),200); ?>
-                                        </p>
+                                        <h1 itemprop="name"><?php echo \App\Helpers\String::snippet($v->title, 30) ?></h1>
                                     </div>
                                     <div class="col-md-2">
-                                        <p><i class="fa fa-eye"></i> <?php echo isset($v->view)?$v->view:0 ?> view </p>
-                                        <p><i class="fa fa-calendar" aria-hidden="true"></i> <?php echo isset($v->created_at)?date('d/m/Y H:i:s',strtotime($v->created_at)):0 ?></p>
+                                        <div class="box-eye-detail">
+                                            <p>
+                                                <i class="fa fa-eye" aria-hidden="true"></i> View detail
+                                            </p>
+                                        </div>
                                     </div>
                                 </a>
                             </div>
@@ -181,6 +194,30 @@
                     <?php echo $pagination_user; ?>
                 </div>
             </div>
+        </div>
+        <div class="col-md-2">
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- saleworld18_category_right1 -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3431173096387405"
+                 data-ad-slot="6262737178"
+                 data-ad-format="auto"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            <br>
+            <br>
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- saleworld18_category_right2 -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3431173096387405"
+                 data-ad-slot="1692936773"
+                 data-ad-format="auto"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
         </div>
     </div>
 </div>

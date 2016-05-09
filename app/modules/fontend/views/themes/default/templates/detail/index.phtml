@@ -33,11 +33,10 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div>
-                            <ul class="bxslider3">
+                            <ul class="bxslider3" itemscope itemtype="http://schema.org/BreadcrumbList">
                                 <?php if(isset($product->image) && is_array($product->image)):?>
                                 <?php foreach($product->image as $k=>$v): ?>
-                                    <li><div><img style="width: 100%;" src="/<?php echo \App\Helpers\App::createThumb(190,280,$v); ?>">
-                                            <input type="text" name="image[]" hidden="true"  value="<?php echo $v; ?>" >
+                                    <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><div><img itemprop="image" alt="<?php echo $product->title; ?>" style="width: 100%;" src="/<?php echo \App\Helpers\App::resize_image(190,280,$v); ?>">
                                         </div></li>
                                 <?php endforeach; ?>
                                 <?php else: ?>
@@ -46,14 +45,26 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-md-9 detail-info">
-                        <h1><strong><?php echo $product->title; ?></strong></h1>
+                    <div class="col-md-9 detail-info" itemscope itemtype="http://schema.org/Product">
+                        <h1 itemprop="name"><strong><?php echo $product->title; ?></strong></h1>
                         <br>
-                        <div class="col-md-4">Price:</div><div class="col-md-8">$<?php echo $product->oldprice; ?></div>
-                        <div class="col-md-4">Sale:</div><div class="col-md-8">$<?php echo $product->newprice; ?></div>
-                        <div class="col-md-4">From:</div><div class="col-md-8"><?php foreach($shop as $k=>$v): if((int)$v->id==(int)$product->shopId): echo $v->domain; endif; endforeach;?></div>
-                        <div class="col-md-4">Date:</div><div class="col-md-8"><?php echo isset($product->created_at)?date('Y-m-d H:i', strtotime($product->created_at)):'0-0-0'; ?></div>
-                        <div>Click to <a style="color: #F06E10 !important;" href="<?php echo isset($product->link)?$product->link:''; ?>">here</a> to BUY!</div>
+                        <div class="col-md-4">Price:</div><div class="col-md-8" style="text-decoration: line-through;" itemprop="price">$<?php echo $product->oldprice; ?></div>
+                        <div class="col-md-4">Sale:</div><div class="col-md-8" itemprop="price">$<?php echo $product->newprice; ?></div>
+                        <div class="col-md-4">From:</div><div class="col-md-8"><?php foreach($shop as $k=>$v): if($v->id==$product->shopId): echo $v->domain; endif; endforeach;?></div>
+                        <div class="col-md-4">Date:</div><div class="col-md-8" itemprop="datePublished"><?php echo isset($product->created_at)?date('Y-m-d H:i', strtotime($product->created_at)):'0-0-0'; ?></div>
+                        <div>Click <a target="_blank" style="color: #F06E10 !important;" href="<?php echo isset($product->link)?$product->link:''; ?>">here</a> to BUY!</div>
+                        <div class="col-md-12">
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- saleworld18_detail2 -->
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-3431173096387405"
+                                 data-ad-slot="4506802378"
+                                 data-ad-format="auto"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div>
                     </div>
                 </div>
                 <br>
@@ -61,23 +72,62 @@
                 <div>
                     <h3><b>Description</b></h3>
                     <hr style="margin-top: 10px">
-                    <div>
+                    <div itemprop="description">
                         <?php echo isset($product->content)?$product->content:'' ?>
+                        <br>
+                        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                        <!-- saleworld18_detail3 -->
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-3431173096387405"
+                             data-ad-slot="5983535577"
+                             data-ad-format="auto"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
                     </div>
                 </div>
                 <br>
                 <br>
                 <br>
                 <div>
+                    <h3>Relate products in shop</h3>
+                    <br>
+                    <ul class="bxslider5" itemscope itemtype="http://schema.org/BreadcrumbList">
+                        <?php foreach($feature_in_shop as $v):?>
+                            <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                                <a itemprop="url" title="<?= isset($v->title)?$v->title:'';?>" href="/product-shop/<?= isset($v->slug)?$v->slug:''?>">
+                                    <img itemprop="url" title="<?= isset($v->title)?$v->title:'';?>" style="width: 100%" src="/<?= \App\Helpers\App::resize_image(160, 240,isset($v->image[0])?$v->image[0]:''); ?>" >
+                                    <br>
+                                    <h3 itemprop="name" style="font-size: 12px"><?= isset($v->title)?$v->title:'';?></h3>
+                                </a>
+                            </li>
+                        <?php endforeach;?>
+                    </ul>
+                </div>
+                <br> <br> <br><br> <br>
+                <div class="text-center">
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- saleworld18_home2 -->
+                    <ins class="adsbygoogle"
+                         style="display:inline-block;width:728px;height:90px"
+                         data-ad-client="ca-pub-3431173096387405"
+                         data-ad-slot="6402337970"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+                <br> <br> <br><br> <br>
+                <div>
                     <h3>User's relate products</h3>
                     <br>
-                    <ul class="bxslider4">
+                    <ul class="bxslider4" itemscope itemtype="http://schema.org/BreadcrumbList">
                         <?php foreach($feature_user as $v):?>
-                            <li>
-                                <a href="/product-user/<?= isset($v->slug)?$v->slug:''?>">
-                                    <img style="width: 100%" src="/<?= \App\Helpers\App::createThumb(160,240,isset($v->image[0])?$v->image[0]:''); ?>" >
+                            <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                                <a itemprop="url" title="<?= isset($v->title)?$v->title:'';?>" href="/product-user/<?= isset($v->slug)?$v->slug:''?>">
+                                    <img itemprop="image" alt="<?= isset($v->title)?$v->title:'';?>" style="width: 100%" src="/<?= \App\Helpers\App::resize_image(160,240,isset($v->image[0])?$v->image[0]:''); ?>" >
                                     <br>
-                                    <h3 style="font-size: 12px"><?= isset($v->title)?$v->title:'';?></h3>
+                                    <h3 itemprop="name" style="font-size: 12px"><?= isset($v->title)?$v->title:'';?></h3>
                                 </a>
                             </li>
                         <?php endforeach;?>
@@ -85,21 +135,35 @@
                 </div>
             </div>
             <div class="col-md-3 box-right"  style="margin-top: 10px;">
-                <div class="advs"></div>
+                <div class="advs row">
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- saleworld18_detail_right -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-3431173096387405"
+                         data-ad-slot="6123136371"
+                         data-ad-format="auto"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+                <br>
+                <br>
                 <div class="feature-product" style="padding-left: 0px; padding-right: 0px">
                     <div class="row" style="padding: 0px 10px;">
                     <h4><strong>Relate</strong></h4>
                     <hr>
                     </div>
-                    <ul>
+                    <ul itemscope itemtype="http://schema.org/BreadcrumbList">
                         <?php foreach($feature as $k=>$v):?>
-                            <li>
-                                <div class="row">
-                                    <div class="col-md-6"><img style="width: 100%" src="<?php echo isset($v->image[0])?$v->image[0]:''; ?>"></div>
+                            <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                                <div class="row" itemprop="item">
+                                    <div class="col-md-6"><img itemprop="image" alt="<?= isset($v->title)?$v->title:'';?>" style="width: 100%" src="/<?php echo \App\Helpers\App::resize_image(150,150,isset($v->image[0])?$v->image[0]:''); ?>"></div>
                                     <div class="col-md-6">
-                                        <a href="/product-clone/<?= isset($v->slug)?$v->slug:''; ?>">
-                                            <h3><?php echo isset($v->title)?\App\Helpers\String::snippet($v->title,100):''; ?></h3><br>
-                                            <span>From : <?php foreach($shop as $vs): if(isset($v->shopId)&&(int)$vs->id==(int)$v->shopId): echo isset($vs->domain)?$vs->domain:''; endif; endforeach;?></span>
+                                        <a itemprop="url" title="<?= isset($v->title)?$v->title:'';?>" href="/product-clone/<?= isset($v->slug)?$v->slug:''; ?>">
+                                            <h3 itemprop="name"><?php echo isset($v->title)?\App\Helpers\String::snippet($v->title,100):''; ?></h3>
+                                            <br>
+                                            <span>From : <?php foreach($shop as $vs): if(isset($v->shopId)&&$vs->id==$v->shopId): echo isset($vs->domain)?$vs->domain:''; endif; endforeach;?></span>
                                         </a>
                                     </div>
                                 </div>
@@ -116,7 +180,7 @@
         $('.bxslider3').bxSlider({
             pager: false,
         });
-        $('.bxslider4').bxSlider({
+        $('.bxslider4, .bxslider5').bxSlider({
             pager: false,
             minSlides:5,
             maxSlides:5,

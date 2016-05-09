@@ -5,10 +5,12 @@
 COMMON = {
     hover_menu:function() {
         $(".lst-category a li").hover(function () {
+            var h = $(this).offset().top - $(".content-box").offset().top;
             var hide = $(this).children('div');
             hide.css('display','block');
             var li_this = this;
             var id = $(this)[0].id;
+            $('.'+id).css('top', h/2);
             $('.'+id).show();
             $(li_this).css('border-bottom','1px solid #DCDEE3');
             $(li_this).css('border-top','1px solid #DCDEE3');

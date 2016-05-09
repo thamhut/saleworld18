@@ -56,7 +56,7 @@ class UploadController extends BaseController
             $upload['err'] = $err = $this->checkFormatFile($file);
             if(!isset($err[1]))
             {
-                $name = md5($file->getName()).'.'.$err[2];
+                $name = md5($file->getName().time()).'.'.$err[2];
                 $file->moveTo($des.'/'.$name);
                 $upload['des'][] =  $url->get().$des.'/'.$name;
             }

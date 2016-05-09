@@ -53,6 +53,7 @@ class CloneController extends BaseController
         $product->image = $this->image;
         $product->uid = 1;
         $product->link = $this->link;
+        $product->created_at = date('Y-m-d H:i:s');
         $product->save();
     }
 
@@ -113,6 +114,8 @@ class CloneController extends BaseController
                 $this->image[] = $upload;
                 $this->link = $link;
                 $this->sephora_detail($link);
+            }else{
+                break;
             }
         }
     }
@@ -141,6 +144,8 @@ class CloneController extends BaseController
                 foreach ($content_cate->find('span.product-name a') as $plink) {
                     if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
                         $this->lacoste_detail($plink->href);
+                    }else{
+                        break;
                     }
                 }
             }else{
@@ -200,21 +205,28 @@ class CloneController extends BaseController
         set_time_limit(0);
         $content = new htmldom;
         $start = 12;
-        $content_cate = $content->str_get_html($this->get_fcontentByGoogle($urlcate));
+        $content_cate = $content->str_get_html($this->file_get_contents_curl($urlcate));
         foreach ($content_cate->find('ul#container_results li.product-tile div.product-details a') as $plink) {
             if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
                 $this->levi_detail($domain . $plink->href);
             }
         }
-        while(1) {
+        $exit = 1;
+        while(1&&$exit==1)
+        {
             $url_s = str_replace($domain,'',$urlcate);
             $url = 'http://www.levi.com/US/en_US/includes/searchResultsScroll/';
             $url .= '?nao='.$start.'&'.'url='.$url_s;
-            $content_cate = $content->str_get_html($this->get_fcontentByGoogle($url));
+            $content_cate = $content->str_get_html($this->file_get_contents_curl($url));
             if($content_cate->find('div.product-details a')){
                 foreach ($content_cate->find('div.product-details a') as $plink) {
-                    if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
-                        $this->levi_detail($domain . $plink->href);
+                    if (isset($plink->href)) {
+                        if(!$this->checkProduct($plink->href, $domain)) {
+                            $this->levi_detail($domain . $plink->href);
+                        }else{
+                            $exit = 2;
+                            break;
+                        }
                     }
                 }
                 $start = $start + 12;
@@ -228,7 +240,7 @@ class CloneController extends BaseController
     public function levi_detail($link){
         set_time_limit(0);
         $content = new htmldom;
-        $content = $this->get_fcontentByGoogle($link);
+        $content = $this->file_get_contents_curl($link);
         preg_match('/(\/p\/)(.*)()/',$link,$matches);
         $id = isset($matches[2])?$matches[2]:0;
         $arr = explode("buyStackJSON = '", htmlentities($content));
@@ -253,14 +265,21 @@ class CloneController extends BaseController
     public function forever21($urlcate, $domain){
         set_time_limit(0);
         $page = 1;
-        while(1)
+        $exit = 1;
+        while(1&&$exit==1)
         {
             $content = new htmldom;
             $content_cate = $content->str_get_html($this->get_fcontentByGoogle($urlcate.'&pagesize=60&page='.$page));
             if($content_cate->find('div.product_item div.item_pic a')) {
                 foreach ($content_cate->find('div.product_item div.item_pic a') as $plink) {
-                    if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
-                        $this->forever21_detail($plink->href);
+                    if (isset($plink->href)) {
+                        if(!$this->checkProduct($plink->href, $domain)) {
+                            $this->forever21_detail($plink->href);
+                        }
+                        else{
+                            $exit = 2;
+                            break;
+                        }
                     }
                 }
                 $page++;
