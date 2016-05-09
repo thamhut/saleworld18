@@ -15,6 +15,7 @@ use App\Models\Mapcate;
 use App\Models\ProductClone;
 use App\Modules\Backend\Models\Website;
 use htmldom;
+use simple_html_dom;
 
 class CloneController extends BaseController
 {
@@ -29,6 +30,8 @@ class CloneController extends BaseController
     public $image=array();
     public function testAction(){
         set_time_limit(0);
+        $this->ralphlauren('http://www.ralphlauren.com/family/index.jsp?ab=ln_nodivision_cs_allapparel&categoryId=54937086&s=D-DollarRank&cp=2943767&pg=1','http://www.ralphlauren.com');
+        die;
         $this->mapcate_website();
     }
 
@@ -53,7 +56,9 @@ class CloneController extends BaseController
         $product->image = $this->image;
         $product->uid = 1;
         $product->link = $this->link;
+        $product->created_at = date('Y-m-d H:i:s');
         $product->save();
+
     }
 
     public function mapcate_website(){
@@ -86,7 +91,79 @@ class CloneController extends BaseController
                     $this->sephora($item_link->link, $item->domain);
                 }
             }
+            elseif(strpos($item->domain, 'ralphlauren.com') !== false){
+                foreach ($link as $item_link) {
+                    $this->idcate = $item_link->idcate;
+                    $this->ralphlauren($item_link->link, $item->domain);
+                }
+            }
         }
+    }
+
+    public function ralphlauren($urlcate, $domain){
+        set_time_limit(0);
+        $page = 1;
+        $exit = 1;
+        while(1&&$exit==1)
+        {
+            $content = new htmldom;
+            $html = $this->get_fcontentByGoogle(urlencode($urlcate).'&pg='.$page);
+            $content_cate = $content->str_get_html($html);
+            if($content_cate->find('li .product-details dt a')) {
+                foreach ($content_cate->find('li .product-details dt a') as $plink) {
+                    if (isset($plink->href)) {
+                        if(!$this->checkProduct($domain.$plink->href, $domain)) {
+                            $this->ralphlauren_detail($domain.$plink->href);
+                        }
+                        else{
+                            $exit = 2;
+                            break;
+                        }
+                    }
+                }
+                $page++;
+            }else{
+                break;
+            }
+        }
+    }
+
+    public function ralphlauren_detail($link){
+        set_time_limit(0);
+        $content = new htmldom;
+        $content = $content->str_get_html($this->get_fcontentByGoogle($link));
+        foreach ($content->find('h1.prod-title') as $item) {
+            $this->title = trim(strip_tags($item));
+            break;
+        }
+        foreach ($content->find('span.reg-price') as $item) {
+            $this->oldprice = trim(strip_tags($item));
+            break;
+        }
+        foreach ($content->find('span.sale-price') as $item) {
+            $this->newprice = trim(strip_tags($item));
+            break;
+        }
+        foreach ($content->find('div#imageDiv img') as $item) {
+            $src = explode('?', $item->src);
+            $src = $src[0];
+            $upload = new UploadController();
+            $upload = $upload->uploadImage($src);
+            $this->image = array();
+            $this->image[] = $upload;
+            break;
+        }
+        $des = '';
+        foreach ($content->find('div#longDescDiv') as $item) {
+            $des .= htmlentities($item);
+            break;
+        }
+        foreach ($content->find('div.prod-details div.detail') as $item) {
+            $des .= htmlentities($item);
+            break;
+        }
+        $this->content = $des;
+        $this->savedata();
     }
 
     public function sephora($urlcate, $domain){
@@ -113,6 +190,8 @@ class CloneController extends BaseController
                 $this->image[] = $upload;
                 $this->link = $link;
                 $this->sephora_detail($link);
+            }else{
+                break;
             }
         }
     }
@@ -141,6 +220,8 @@ class CloneController extends BaseController
                 foreach ($content_cate->find('span.product-name a') as $plink) {
                     if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
                         $this->lacoste_detail($plink->href);
+                    }else{
+                        break;
                     }
                 }
             }else{
@@ -200,21 +281,28 @@ class CloneController extends BaseController
         set_time_limit(0);
         $content = new htmldom;
         $start = 12;
-        $content_cate = $content->str_get_html($this->get_fcontentByGoogle($urlcate));
+        $content_cate = $content->str_get_html($this->file_get_contents_curl($urlcate));
         foreach ($content_cate->find('ul#container_results li.product-tile div.product-details a') as $plink) {
             if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
                 $this->levi_detail($domain . $plink->href);
             }
         }
-        while(1) {
+        $exit = 1;
+        while(1&&$exit==1)
+        {
             $url_s = str_replace($domain,'',$urlcate);
             $url = 'http://www.levi.com/US/en_US/includes/searchResultsScroll/';
             $url .= '?nao='.$start.'&'.'url='.$url_s;
-            $content_cate = $content->str_get_html($this->get_fcontentByGoogle($url));
+            $content_cate = $content->str_get_html($this->file_get_contents_curl($url));
             if($content_cate->find('div.product-details a')){
                 foreach ($content_cate->find('div.product-details a') as $plink) {
-                    if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
-                        $this->levi_detail($domain . $plink->href);
+                    if (isset($plink->href)) {
+                        if(!$this->checkProduct($plink->href, $domain)) {
+                            $this->levi_detail($domain . $plink->href);
+                        }else{
+                            $exit = 2;
+                            break;
+                        }
                     }
                 }
                 $start = $start + 12;
@@ -228,7 +316,7 @@ class CloneController extends BaseController
     public function levi_detail($link){
         set_time_limit(0);
         $content = new htmldom;
-        $content = $this->get_fcontentByGoogle($link);
+        $content = $this->file_get_contents_curl($link);
         preg_match('/(\/p\/)(.*)()/',$link,$matches);
         $id = isset($matches[2])?$matches[2]:0;
         $arr = explode("buyStackJSON = '", htmlentities($content));
@@ -253,14 +341,21 @@ class CloneController extends BaseController
     public function forever21($urlcate, $domain){
         set_time_limit(0);
         $page = 1;
-        while(1)
+        $exit = 1;
+        while(1&&$exit==1)
         {
             $content = new htmldom;
             $content_cate = $content->str_get_html($this->get_fcontentByGoogle($urlcate.'&pagesize=60&page='.$page));
             if($content_cate->find('div.product_item div.item_pic a')) {
                 foreach ($content_cate->find('div.product_item div.item_pic a') as $plink) {
-                    if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
-                        $this->forever21_detail($plink->href);
+                    if (isset($plink->href)) {
+                        if(!$this->checkProduct($plink->href, $domain)) {
+                            $this->forever21_detail($plink->href);
+                        }
+                        else{
+                            $exit = 2;
+                            break;
+                        }
                     }
                 }
                 $page++;
@@ -319,6 +414,10 @@ class CloneController extends BaseController
         if(strpos($domain, 'sephora.com') !== false){
             $id = $this->idp;
         }
+        if(strpos($domain, 'ralphlauren.com') !== false){
+            preg_match('/(productId=)(.*)()/',$link,$matches);
+            $id = isset($matches[2])?$matches[2]:0;
+        }
         if($id != 0) {
             $link_check = Links::findFirst(array(array('id_product' => (int)$id), 'domain' => $domain));
         }else{
@@ -360,7 +459,9 @@ class CloneController extends BaseController
         curl_setopt($curl, CURLOPT_AUTOREFERER, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $fields_string);
+        if(is_array($fields_string) && sizeof($fields_string)>0) {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $fields_string);
+        }
 
         $html = curl_exec($curl);
 
