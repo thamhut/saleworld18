@@ -615,4 +615,11 @@ class CloneController extends BaseController
 
         return $html;
     }
+
+    public function checkClone($sid){
+        $w = new Website();
+        $w = $w->findFirst($sid);
+        $w->status = 10;
+        $w->save();
+    }
 }
