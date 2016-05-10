@@ -191,4 +191,7 @@ return array (
   'About us' => 'About us',
   'backend_breadcrumb_clone' => 'backend breadcrumb clone',
   'Sale world' => 'Sale world',
+  'Sale world | Category' => 'Sale world | Category',
+  'Sale world | Bodycon' => 'Sale world | Bodycon',
+  'Sale world | Faux-Suede Sweatshirt' => 'Sale world | Faux-Suede Sweatshirt',
 );

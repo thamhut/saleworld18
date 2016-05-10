@@ -113,5 +113,7 @@ class UploadController extends BaseController
         $downloaded_file = fopen($save_to, 'w');
         fwrite($downloaded_file, $file_content);
         fclose($downloaded_file);
+        /*$cmd = 'wget "'.$file_url.'" -O '.$save_to;
+        @exec($cmd);*/
     }
 }

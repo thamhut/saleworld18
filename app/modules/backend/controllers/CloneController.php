@@ -30,7 +30,7 @@ class CloneController extends BaseController
     public $image=array();
     public function testAction(){
         set_time_limit(0);
-        $this->ralphlauren('http://www.ralphlauren.com/family/index.jsp?ab=ln_nodivision_cs_allapparel&categoryId=54937086&s=D-DollarRank&cp=2943767&pg=1','http://www.ralphlauren.com');
+        $this->aldoshoes('http://www.aldoshoes.com/us/en_US/sale/women/sale-shoes/c/511?show=All&viewAll=false','http://www.aldoshoes.com');
         die;
         $this->mapcate_website();
     }
@@ -97,7 +97,149 @@ class CloneController extends BaseController
                     $this->ralphlauren($item_link->link, $item->domain);
                 }
             }
+            elseif(strpos($item->domain, 'armaniexchange.com') !== false){
+                foreach ($link as $item_link) {
+                    $this->idcate = $item_link->idcate;
+                    $this->armaniexchange($item_link->link, $item->domain);
+                }
+            }
+            elseif(strpos($item->domain, 'aldoshoes.com') !== false){
+                foreach ($link as $item_link) {
+                    $this->idcate = $item_link->idcate;
+                    $this->aldoshoes($item_link->link, $item->domain);
+                }
+            }
         }
+    }
+
+    public function aldoshoes($urlcate, $domain){
+        set_time_limit(0);
+        $content = new htmldom;
+        $html = $this->get_fcontentByGoogle(urlencode($urlcate));
+        $content_cate = $content->str_get_html($html);
+        if($content_cate->find('div.product-tile a')){
+            foreach ($content_cate->find('div.product-tile a') as $item) {
+                if(!$this->checkProduct($item->href, $domain)){
+                    $price = explode('<p class="price-container clearfix">', $item);
+                    $price = explode('</p>',$price[1]);
+                    $price = trim(strip_tags($price[0]));
+                    $price = explode('$', $price);
+                    $this->oldprice = trim($price[1]);
+                    $this->newprice = trim($price[2]);
+                    $this->aldoshoes_detail($domain.$item->href);
+                }else{
+                    break;
+                }
+            }
+        }
+    }
+
+    public function aldoshoes_detail($link){
+        set_time_limit(0);
+        $content = new htmldom;
+        $html = $this->get_fcontentByGoogle(urlencode($link));
+        $content_cate = $content->str_get_html($html);
+        foreach ($content_cate->find('div.product-detail-column h1') as $item) {
+            $this->title = trim(strip_tags($item));
+            break;
+        }
+
+        foreach ($content_cate->find('a#imageLink img') as $item) {
+            $src = 'http:'.$item->src;
+            $upload = new UploadController();
+            $upload = $upload->uploadImage($src);
+            $this->image = array();
+            $this->image[] = $upload;
+            break;
+        }
+
+        foreach ($content_cate->find('div.ProductDescription') as $item) {
+            $this->content = htmlentities($item);
+            break;
+        }
+        $this->link = $link;
+        $this->savedata();
+        die;
+    }
+
+    public function armaniexchange($urlcate, $domain){
+        set_time_limit(0);
+        $content = new htmldom;
+        $html = $this->get_fcontentByGoogle(urlencode($urlcate));
+        $content_cate = $content->str_get_html($html);
+        if($content_cate->find('div.thumbheader a')) {
+            foreach($content_cate->find('div.thumbheader a') as $item){
+                if(!$this->checkProduct($item->href, $domain)){
+                    $this->armaniexchange_detail($domain.$item->href);
+                }else{
+                    break;
+                }
+            }
+
+            $exit = $page = 2;
+            while(1&&$exit==2)
+            {
+                $url = $urlcate.'?page='.$page.'&scroll=true';
+                $content_cate1 = $content->str_get_html($this->file_get_contents_curl($url));
+                if($content_cate1->find('div.thumbheader a')) {
+                    foreach($content_cate1->find('div.thumbheader a') as $item){
+                        if(!$this->checkProduct($item->href, $domain)){
+                            $this->armaniexchange_detail($domain.$item->href);
+                        }else{
+                            $exit=10;
+                            break;
+                        }
+                    }
+                }else{
+                    $exit=10;
+                    break;
+                }
+                $page++;
+            }
+        }
+    }
+
+    public function armaniexchange_detail($link){
+        set_time_limit(0);
+        $content = new htmldom;
+        $html = $this->get_fcontentByGoogle(urlencode($link));
+        $content_cate = $content->str_get_html($html);
+        foreach($content_cate->find('div.prdTxt h1') as $item){
+            $this->title = trim(strip_tags($item));
+            break;
+        }
+        foreach($content_cate->find('span#productPricing') as $item){
+            $this->oldprice = str_replace('$','',trim(strip_tags($item)));
+            break;
+        }
+        foreach($content_cate->find('font') as $item){
+            if($item->color == '#f14d4e') {
+                $newprice = trim(strip_tags($item));
+                $newprice = explode('%', $newprice);
+                $newprice = (int)trim($newprice[0]);
+                $newprice = $this->oldprice - ($newprice*$this->oldprice)/100;
+                $this->newprice = $newprice;
+                break;
+            }
+        }
+        $des = '';
+        foreach ($content_cate->find('div.shortDesc') as $item) {
+            $des .= htmlentities(trim($item));
+        }
+        foreach ($content_cate->find('div#prdDescr') as $item) {
+            $des .= htmlentities(trim($item));
+        }
+        $this->content = $des;
+        foreach ($content_cate->find('div.thumbdiv img') as $item) {
+            $src = explode('?', $item->src);
+            $src = $src[0];
+            $upload = new UploadController();
+            $upload = $upload->uploadImage($src);
+            $this->image = array();
+            $this->image[] = $upload;
+        }
+        $this->link = $link;
+        $this->savedata();
     }
 
     public function ralphlauren($urlcate, $domain){
@@ -137,21 +279,24 @@ class CloneController extends BaseController
             break;
         }
         foreach ($content->find('span.reg-price') as $item) {
-            $this->oldprice = trim(strip_tags($item));
+            $this->oldprice = str_replace('$','',trim(strip_tags($item)));
+            $this->oldprice = str_replace('&#036;','',trim(strip_tags($item)));
             break;
         }
         foreach ($content->find('span.sale-price') as $item) {
-            $this->newprice = trim(strip_tags($item));
+            $this->newprice = str_replace('$','',trim(strip_tags($item)));
+            $this->newprice = str_replace('&#036;','',trim(strip_tags($item)));
             break;
         }
-        foreach ($content->find('div#imageDiv img') as $item) {
-            $src = explode('?', $item->src);
-            $src = $src[0];
-            $upload = new UploadController();
-            $upload = $upload->uploadImage($src);
-            $this->image = array();
-            $this->image[] = $upload;
-            break;
+        foreach ($content->find('div.prod-img input') as $item) {
+            if($item->name == "enh_0"){
+                $src = $item->value;
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($src);
+                $this->image = array();
+                $this->image[] = $upload;
+                break;
+            }
         }
         $des = '';
         foreach ($content->find('div#longDescDiv') as $item) {
@@ -163,6 +308,7 @@ class CloneController extends BaseController
             break;
         }
         $this->content = $des;
+        $this->link = $link;
         $this->savedata();
     }
 
@@ -408,15 +554,15 @@ class CloneController extends BaseController
             preg_match('/(\/p\/)(.*)()/',$link,$matches);
             $id = isset($matches[2])?$matches[2]:0;
         }
-        if(strpos($domain, 'lacoste.com') !== false){
-            $linkDetail = $link;
-        }
         if(strpos($domain, 'sephora.com') !== false){
             $id = $this->idp;
         }
         if(strpos($domain, 'ralphlauren.com') !== false){
             preg_match('/(productId=)(.*)()/',$link,$matches);
             $id = isset($matches[2])?$matches[2]:0;
+        }
+        if(strpos($domain, 'armaniexchange.com') !== false || strpos($domain, 'aldoshoes.com') !== false || strpos($domain, 'lacoste.com') !== false){
+            $linkDetail = $link;
         }
         if($id != 0) {
             $link_check = Links::findFirst(array(array('id_product' => (int)$id), 'domain' => $domain));
