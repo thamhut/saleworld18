@@ -30,8 +30,6 @@ class CloneController extends BaseController
     public $image=array();
     public function testAction(){
         set_time_limit(0);
-        $this->aldoshoes('http://www.aldoshoes.com/us/en_US/sale/women/sale-shoes/c/511?show=All&viewAll=false','http://www.aldoshoes.com');
-        die;
         $this->mapcate_website();
     }
 
@@ -58,7 +56,6 @@ class CloneController extends BaseController
         $product->link = $this->link;
         $product->created_at = date('Y-m-d H:i:s');
         $product->save();
-
     }
 
     public function mapcate_website(){

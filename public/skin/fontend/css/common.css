@@ -88,3 +88,4 @@ ul.lst-category li i{ float: right;}
 .lst-category-level .col-md-6{margin-bottom: 5px}
 .item-category-level h4{font-size: 16px !important;}
 #box-list-category:hover{height: auto;}
+.bx-wrapper img{border: 1px solid #eee; padding: 4px;}
