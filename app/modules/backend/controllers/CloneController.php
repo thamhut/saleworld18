@@ -74,12 +74,12 @@ class CloneController extends BaseController
             $this->shopId = $item->id;
             $link = Mapcate::find('idweb='.$this->shopId);
             if(strpos($item->domain, 'forever21.com') !== false) {
-                foreach ($link as $item_link) {
+                /*foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->forever21($item_link->link, $item->domain);
-                }
+                }*/
             }
-            elseif(strpos($item->domain, 'levi.com') !== false){
+            /*elseif(strpos($item->domain, 'levi.com') !== false){
                 foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->levi($item_link->link, $item->domain);
@@ -114,8 +114,81 @@ class CloneController extends BaseController
                     $this->idcate = $item_link->idcate;
                     $this->aldoshoes($item_link->link, $item->domain);
                 }
+            }*/
+            elseif(strpos($item->domain, 'columbia.com') !== false){
+                foreach ($link as $item_link) {
+                    $this->idcate = $item_link->idcate;
+                    $this->columbia($item_link->link, $item->domain);
+                }
             }
         }
+    }
+
+    public function columbia($urlcate, $domain){
+        set_time_limit(0);
+        $content = new htmldom;
+        $html = $this->get_fcontentByGoogle(urlencode($urlcate));
+        $content_cate = $content->str_get_html($html);
+        foreach($content_cate->find('div.product-name h2 a') as $item){
+            if(!$this->checkProduct($item->href, $domain)){
+                $this->columbia_detail($item->href);
+            }
+        }
+        $start = 23;
+        while(1){
+            $url = $urlcate.'?sz=24&start='.$start.'&format=page-element';
+            $html = $this->get_fcontentByGoogle(urlencode($url));
+            $content_cate = $content->str_get_html($html);
+            if($content_cate->find('div.product-name h2 a')) {
+                foreach ($content_cate->find('div.product-name h2 a') as $item) {
+                    if(!$this->checkProduct($item->href, $domain)){
+                        $this->columbia_detail($item->href);
+                    }
+                }
+            }else{
+                break;
+            }
+            $start += 24;
+        }
+    }
+
+    public function columbia_detail($link){
+        set_time_limit(0);
+        $content = new htmldom;
+        $html = $this->get_fcontentByGoogle(urlencode($link));
+        $content_cate = $content->str_get_html($html);
+        foreach ($content_cate->find('h1.product-name') as $item) {
+            $this->title = trim(strip_tags($item));
+            break;
+        }
+        foreach ($content_cate->find('span.price-sales') as $item) {
+            $newprice = trim(strip_tags($item));
+            $newprice = str_replace('$','',$newprice);
+            $this->newprice = $newprice;
+            break;
+        }
+        foreach ($content_cate->find('span.price-standard') as $item) {
+            $oldprice = trim(strip_tags($item));
+            $oldprice = str_replace('$','',$oldprice);
+            $this->oldprice = $oldprice;
+            break;
+        }
+        foreach ($content_cate->find('li.selected a.swatchanchor') as $item) {
+            preg_match('/(data-thumbnails=\')(.*)(\')/',$item, $match);
+            $json = json_decode($match[2]);
+            $src = $json[0];
+            $upload = new UploadController();
+            $upload = $upload->uploadImage($src);
+            $this->image = array();
+            $this->image[] = $upload;
+            break;
+        }
+        foreach ($content_cate->find('div.product_details_wrapper') as $item) {
+            $this->content = htmlentities($item);
+            break;
+        }
+        $this->link = $link;
+        $this->savedata();
     }
 
     public function aldoshoes($urlcate, $domain){
@@ -568,7 +641,7 @@ class CloneController extends BaseController
             preg_match('/(productId=)(.*)()/',$link,$matches);
             $id = isset($matches[2])?$matches[2]:0;
         }
-        if(strpos($domain, 'armaniexchange.com') !== false || strpos($domain, 'aldoshoes.com') !== false || strpos($domain, 'lacoste.com') !== false){
+        if(strpos($domain, 'columbia.com') !== false || strpos($domain, 'armaniexchange.com') !== false || strpos($domain, 'aldoshoes.com') !== false || strpos($domain, 'lacoste.com') !== false){
             $linkDetail = $link;
         }
         if($id != 0) {
