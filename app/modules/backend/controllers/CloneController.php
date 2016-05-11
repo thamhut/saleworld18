@@ -33,10 +33,18 @@ class CloneController extends BaseController
         $this->mapcate_website();
     }
 
-    public function fix(){
-        $clone = ProductClone::find(array('columns'=>'image'));
+    public function fixAction(){
+        $clone = ProductClone::find(array('columns'=>'image, _id, link','sort'=>array('_id'=>-1)));
         foreach($clone as $item){
-            unlink($item->image[0]);
+            if(filesize($item->image[0]) < 2000) {
+                $link = explode('-P', $item->link);
+                $link = $link[1];
+                unlink($item->image[0]);
+                $p = ProductClone::findFirst(array(array('_id'=>new \MongoId($item->_id))));
+                $map = Links::findFirst(array(array('id_product'=>(int)$link,'domain'=>'http://www.sephora.com')));
+                $p->delete();
+                $map->delete();
+            }
         }
     }
 
@@ -56,6 +64,7 @@ class CloneController extends BaseController
         $product->link = $this->link;
         $product->created_at = date('Y-m-d H:i:s');
         $product->save();
+        sleep(2);
     }
 
     public function mapcate_website(){
@@ -125,7 +134,7 @@ class CloneController extends BaseController
                     $this->newprice = trim($price[2]);
                     $this->aldoshoes_detail($domain.$item->href);
                 }else{
-                    break;
+                    //break;
                 }
             }
         }
@@ -169,7 +178,7 @@ class CloneController extends BaseController
                 if(!$this->checkProduct($item->href, $domain)){
                     $this->armaniexchange_detail($domain.$item->href);
                 }else{
-                    break;
+                    //break;
                 }
             }
 
@@ -184,7 +193,7 @@ class CloneController extends BaseController
                             $this->armaniexchange_detail($domain.$item->href);
                         }else{
                             $exit=10;
-                            break;
+                            //break;
                         }
                     }
                 }else{
@@ -256,7 +265,7 @@ class CloneController extends BaseController
                         }
                         else{
                             $exit = 2;
-                            break;
+                            //break;
                         }
                     }
                 }
@@ -333,8 +342,9 @@ class CloneController extends BaseController
                 $this->image[] = $upload;
                 $this->link = $link;
                 $this->sephora_detail($link);
+                sleep(5);
             }else{
-                break;
+                //break;
             }
         }
     }
@@ -364,7 +374,7 @@ class CloneController extends BaseController
                     if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
                         $this->lacoste_detail($plink->href);
                     }else{
-                        break;
+                        //break;
                     }
                 }
             }else{
@@ -375,7 +385,7 @@ class CloneController extends BaseController
     public function lacoste_detail($link){
         set_time_limit(0);
         $content = new htmldom;
-        $content = $content->str_get_html($this->get_fcontentByGoogle($link));
+        $content = $content->str_get_html($this->file_get_contents_curl($link));
         foreach($content->find('h1.sku-product-name') as $item){
             $this->title = trim(strip_tags($item));
         }
@@ -444,7 +454,7 @@ class CloneController extends BaseController
                             $this->levi_detail($domain . $plink->href);
                         }else{
                             $exit = 2;
-                            break;
+                            //break;
                         }
                     }
                 }
@@ -497,7 +507,7 @@ class CloneController extends BaseController
                         }
                         else{
                             $exit = 2;
-                            break;
+                            //break;
                         }
                     }
                 }
