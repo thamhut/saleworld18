@@ -57,7 +57,7 @@
                 <div id="box-list-shop" style="height: 330px">
                     <ul>
                         <?php foreach($shop as $k=>$v):?>
-                        <li><a href="/shop/<?=$v->id; ?>"><div><img style="width: 36px" src="<?php echo isset($v->logo)?$v->logo:'' ?>" /> <span><?php echo $v->name?></span></div></a></li>
+                        <li><a title="<?php echo $v->name; ?> sale" href="/shop/<?=$v->id; ?>"><div><img alt="<?php echo $v->name; ?> sale" style="width: 36px" src="<?php echo isset($v->logo)?$v->logo:'' ?>" /> <span><?php echo $v->name?></span></div></a></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>

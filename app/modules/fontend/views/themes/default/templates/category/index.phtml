@@ -63,7 +63,7 @@
                 <hr>
                 <ul itemscope itemtype="http://schema.org/BreadcrumbList">
                     <?php foreach($shop as $k=>$v): ?>
-                        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="li-category1 filter-shop cursor-pointer" data-id="<?=$v->id ?>"><i class="fa <?php if($s==$v->id): ?>fa-check<?php else:?>fa-link<?php endif;?>"></i> <a itemprop="item" <?php if(isset($url_clone_s)): ?>href="<?php echo $url_clone_s.'&s='.$v->id ?>" <?php endif;?>><?=$v->domain ?></a></li>
+                        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="li-category1 filter-shop cursor-pointer" data-id="<?=$v->id ?>"><i class="fa <?php if($s==$v->id): ?>fa-check<?php else:?>fa-link<?php endif;?>"></i> <a title="<?=$v->domain ?> sale" itemprop="item" <?php if(isset($url_clone_s)): ?>href="<?php echo $url_clone_s.'&s='.$v->id ?>" <?php endif;?>><?=$v->domain ?></a></li>
                     <?php endforeach;?>
                 </ul>
             </div>

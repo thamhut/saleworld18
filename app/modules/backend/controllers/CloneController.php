@@ -31,6 +31,7 @@ class CloneController extends BaseController
     public function testAction(){
         set_time_limit(0);
         $this->mapcate_website();
+        //$this->hm('http://www.hm.com/us/products/sale/ladies/dresses_jumpsuits','http://www.hm.com');
     }
 
     public function fixAction(){
@@ -108,19 +109,80 @@ class CloneController extends BaseController
                     $this->idcate = $item_link->idcate;
                     $this->armaniexchange($item_link->link, $item->domain);
                 }
-            }
+            }*/
             elseif(strpos($item->domain, 'aldoshoes.com') !== false){
                 foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->aldoshoes($item_link->link, $item->domain);
                 }
-            }*/
+            }
             elseif(strpos($item->domain, 'columbia.com') !== false){
                 foreach ($link as $item_link) {
                     $this->idcate = $item_link->idcate;
                     $this->columbia($item_link->link, $item->domain);
                 }
             }
+            elseif(strpos($item->domain, 'hm.com') !== false){
+                foreach ($link as $item_link) {
+                    $this->idcate = $item_link->idcate;
+                    $this->hm($item_link->link, $item->domain);
+                }
+            }
+        }
+    }
+
+    public function hm($urlcate, $domain){
+        set_time_limit(0);
+        $content = new htmldom;
+        $page = 1;
+        while(1){
+            $html = $this->get_fcontentByGoogle(urlencode($urlcate.'?page='.$page));
+            $content_cate = $content->str_get_html($html);
+            if($content_cate) {
+                if ($content_cate->find('ul.products-list li a')) {
+                    foreach ($content_cate->find('ul.products-list li a') as $item) {
+                        if (!$this->checkProduct($item->href, $domain)) {
+                            $this->hm_detail($item->href);
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }else{
+                break;
+            }
+            $page++;
+        }
+
+    }
+
+    public function hm_detail($link){
+        set_time_limit(0);
+        $content = new htmldom;
+        $html = $this->get_fcontentByGoogle(urlencode($link));
+        $content_cate = $content->str_get_html($html);
+        if($content_cate) {
+            foreach ($content_cate->find('form#product h1') as $item) {
+                $title = explode('$', strip_tags($item));
+                $this->title = trim($title[0]);
+                $this->oldprice = trim($title[2]);
+                $this->newprice = trim($title[1]);
+                break;
+            }
+            foreach ($content_cate->find('div.description') as $item) {
+                $this->content = htmlentities($item);
+                break;
+            }
+            foreach ($content_cate->find('img#product-image') as $item) {
+                $src = 'http:' . $item->src;
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($src);
+                $this->image = array();
+                $this->image[] = $upload;
+                break;
+            }
+            $this->link = $link;
+            $this->savedata();
         }
     }
 
@@ -129,26 +191,32 @@ class CloneController extends BaseController
         $content = new htmldom;
         $html = $this->get_fcontentByGoogle(urlencode($urlcate));
         $content_cate = $content->str_get_html($html);
-        foreach($content_cate->find('div.product-name h2 a') as $item){
-            if(!$this->checkProduct($item->href, $domain)){
-                $this->columbia_detail($item->href);
-            }
-        }
-        $start = 23;
-        while(1){
-            $url = $urlcate.'?sz=24&start='.$start.'&format=page-element';
-            $html = $this->get_fcontentByGoogle(urlencode($url));
-            $content_cate = $content->str_get_html($html);
-            if($content_cate->find('div.product-name h2 a')) {
-                foreach ($content_cate->find('div.product-name h2 a') as $item) {
-                    if(!$this->checkProduct($item->href, $domain)){
-                        $this->columbia_detail($item->href);
-                    }
+        if($content_cate) {
+            foreach ($content_cate->find('div.product-name h2 a') as $item) {
+                if (!$this->checkProduct($item->href, $domain)) {
+                    $this->columbia_detail($item->href);
                 }
-            }else{
-                break;
             }
-            $start += 24;
+            $start = 23;
+            while (1) {
+                $url = $urlcate . '?sz=24&start=' . $start . '&format=page-element';
+                $html = $this->get_fcontentByGoogle(urlencode($url));
+                $content_cate = $content->str_get_html($html);
+                if($content_cate) {
+                    if ($content_cate->find('div.product-name h2 a')) {
+                        foreach ($content_cate->find('div.product-name h2 a') as $item) {
+                            if (!$this->checkProduct($item->href, $domain)) {
+                                $this->columbia_detail($item->href);
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }else{
+                    break;
+                }
+                $start += 24;
+            }
         }
     }
 
@@ -157,38 +225,40 @@ class CloneController extends BaseController
         $content = new htmldom;
         $html = $this->get_fcontentByGoogle(urlencode($link));
         $content_cate = $content->str_get_html($html);
-        foreach ($content_cate->find('h1.product-name') as $item) {
-            $this->title = trim(strip_tags($item));
-            break;
+        if($content_cate) {
+            foreach ($content_cate->find('h1.product-name') as $item) {
+                $this->title = trim(strip_tags($item));
+                break;
+            }
+            foreach ($content_cate->find('span.price-sales') as $item) {
+                $newprice = trim(strip_tags($item));
+                $newprice = str_replace('$', '', $newprice);
+                $this->newprice = $newprice;
+                break;
+            }
+            foreach ($content_cate->find('span.price-standard') as $item) {
+                $oldprice = trim(strip_tags($item));
+                $oldprice = str_replace('$', '', $oldprice);
+                $this->oldprice = $oldprice;
+                break;
+            }
+            foreach ($content_cate->find('li.selected a.swatchanchor') as $item) {
+                preg_match('/(data-thumbnails=\')(.*)(\')/', $item, $match);
+                $json = json_decode($match[2]);
+                $src = $json[0];
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($src);
+                $this->image = array();
+                $this->image[] = $upload;
+                break;
+            }
+            foreach ($content_cate->find('div.product_details_wrapper') as $item) {
+                $this->content = htmlentities($item);
+                break;
+            }
+            $this->link = $link;
+            $this->savedata();
         }
-        foreach ($content_cate->find('span.price-sales') as $item) {
-            $newprice = trim(strip_tags($item));
-            $newprice = str_replace('$','',$newprice);
-            $this->newprice = $newprice;
-            break;
-        }
-        foreach ($content_cate->find('span.price-standard') as $item) {
-            $oldprice = trim(strip_tags($item));
-            $oldprice = str_replace('$','',$oldprice);
-            $this->oldprice = $oldprice;
-            break;
-        }
-        foreach ($content_cate->find('li.selected a.swatchanchor') as $item) {
-            preg_match('/(data-thumbnails=\')(.*)(\')/',$item, $match);
-            $json = json_decode($match[2]);
-            $src = $json[0];
-            $upload = new UploadController();
-            $upload = $upload->uploadImage($src);
-            $this->image = array();
-            $this->image[] = $upload;
-            break;
-        }
-        foreach ($content_cate->find('div.product_details_wrapper') as $item) {
-            $this->content = htmlentities($item);
-            break;
-        }
-        $this->link = $link;
-        $this->savedata();
     }
 
     public function aldoshoes($urlcate, $domain){
@@ -196,18 +266,20 @@ class CloneController extends BaseController
         $content = new htmldom;
         $html = $this->get_fcontentByGoogle(urlencode($urlcate));
         $content_cate = $content->str_get_html($html);
-        if($content_cate->find('div.product-tile a')){
-            foreach ($content_cate->find('div.product-tile a') as $item) {
-                if(!$this->checkProduct($item->href, $domain)){
-                    $price = explode('<p class="price-container clearfix">', $item);
-                    $price = explode('</p>',$price[1]);
-                    $price = trim(strip_tags($price[0]));
-                    $price = explode('$', $price);
-                    $this->oldprice = trim($price[1]);
-                    $this->newprice = trim($price[2]);
-                    $this->aldoshoes_detail($domain.$item->href);
-                }else{
-                    //break;
+        if($content_cate) {
+            if ($content_cate->find('div.product-tile a')) {
+                foreach ($content_cate->find('div.product-tile a') as $item) {
+                    if (!$this->checkProduct($item->href, $domain)) {
+                        $price = explode('<p class="price-container clearfix">', $item);
+                        $price = explode('</p>', $price[1]);
+                        $price = trim(strip_tags($price[0]));
+                        $price = explode('$', $price);
+                        $this->oldprice = trim($price[1]);
+                        $this->newprice = trim($price[2]);
+                        $this->aldoshoes_detail($domain . $item->href);
+                    } else {
+                        //break;
+                    }
                 }
             }
         }
@@ -218,27 +290,28 @@ class CloneController extends BaseController
         $content = new htmldom;
         $html = $this->get_fcontentByGoogle(urlencode($link));
         $content_cate = $content->str_get_html($html);
-        foreach ($content_cate->find('div.product-detail-column h1') as $item) {
-            $this->title = trim(strip_tags($item));
-            break;
-        }
+        if($content_cate) {
+            foreach ($content_cate->find('div.product-detail-column h1') as $item) {
+                $this->title = trim(strip_tags($item));
+                break;
+            }
 
-        foreach ($content_cate->find('a#imageLink img') as $item) {
-            $src = 'http:'.$item->src;
-            $upload = new UploadController();
-            $upload = $upload->uploadImage($src);
-            $this->image = array();
-            $this->image[] = $upload;
-            break;
-        }
+            foreach ($content_cate->find('a#imageLink img') as $item) {
+                $src = 'http:' . $item->src;
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($src);
+                $this->image = array();
+                $this->image[] = $upload;
+                break;
+            }
 
-        foreach ($content_cate->find('div.ProductDescription') as $item) {
-            $this->content = htmlentities($item);
-            break;
+            foreach ($content_cate->find('div.ProductDescription') as $item) {
+                $this->content = htmlentities($item);
+                break;
+            }
+            $this->link = $link;
+            $this->savedata();
         }
-        $this->link = $link;
-        $this->savedata();
-        die;
     }
 
     public function armaniexchange($urlcate, $domain){
@@ -246,34 +319,39 @@ class CloneController extends BaseController
         $content = new htmldom;
         $html = $this->get_fcontentByGoogle(urlencode($urlcate));
         $content_cate = $content->str_get_html($html);
-        if($content_cate->find('div.thumbheader a')) {
-            foreach($content_cate->find('div.thumbheader a') as $item){
-                if(!$this->checkProduct($item->href, $domain)){
-                    $this->armaniexchange_detail($domain.$item->href);
-                }else{
-                    //break;
-                }
-            }
-
-            $exit = $page = 2;
-            while(1&&$exit==2)
-            {
-                $url = $urlcate.'?page='.$page.'&scroll=true';
-                $content_cate1 = $content->str_get_html($this->file_get_contents_curl($url));
-                if($content_cate1->find('div.thumbheader a')) {
-                    foreach($content_cate1->find('div.thumbheader a') as $item){
-                        if(!$this->checkProduct($item->href, $domain)){
-                            $this->armaniexchange_detail($domain.$item->href);
-                        }else{
-                            $exit=10;
-                            //break;
-                        }
+        if($content_cate) {
+            if ($content_cate->find('div.thumbheader a')) {
+                foreach ($content_cate->find('div.thumbheader a') as $item) {
+                    if (!$this->checkProduct($item->href, $domain)) {
+                        $this->armaniexchange_detail($domain . $item->href);
+                    } else {
+                        //break;
                     }
-                }else{
-                    $exit=10;
-                    break;
                 }
-                $page++;
+
+                $exit = $page = 2;
+                while (1 && $exit == 2) {
+                    $url = $urlcate . '?page=' . $page . '&scroll=true';
+                    $content_cate1 = $content->str_get_html($this->file_get_contents_curl($url));
+                    if ($content_cate1) {
+                        if ($content_cate1->find('div.thumbheader a')) {
+                            foreach ($content_cate1->find('div.thumbheader a') as $item) {
+                                if (!$this->checkProduct($item->href, $domain)) {
+                                    $this->armaniexchange_detail($domain . $item->href);
+                                } else {
+                                    $exit = 10;
+                                    //break;
+                                }
+                            }
+                        } else {
+                            $exit = 10;
+                            break;
+                        }
+                        $page++;
+                    }else{
+                        break;
+                    }
+                }
             }
         }
     }
@@ -283,42 +361,44 @@ class CloneController extends BaseController
         $content = new htmldom;
         $html = $this->get_fcontentByGoogle(urlencode($link));
         $content_cate = $content->str_get_html($html);
-        foreach($content_cate->find('div.prdTxt h1') as $item){
-            $this->title = trim(strip_tags($item));
-            break;
-        }
-        foreach($content_cate->find('span#productPricing') as $item){
-            $this->oldprice = str_replace('$','',trim(strip_tags($item)));
-            break;
-        }
-        foreach($content_cate->find('font') as $item){
-            if($item->color == '#f14d4e') {
-                $newprice = trim(strip_tags($item));
-                $newprice = explode('%', $newprice);
-                $newprice = (int)trim($newprice[0]);
-                $newprice = $this->oldprice - ($newprice*$this->oldprice)/100;
-                $this->newprice = $newprice;
+        if($content_cate) {
+            foreach ($content_cate->find('div.prdTxt h1') as $item) {
+                $this->title = trim(strip_tags($item));
                 break;
             }
+            foreach ($content_cate->find('span#productPricing') as $item) {
+                $this->oldprice = str_replace('$', '', trim(strip_tags($item)));
+                break;
+            }
+            foreach ($content_cate->find('font') as $item) {
+                if ($item->color == '#f14d4e') {
+                    $newprice = trim(strip_tags($item));
+                    $newprice = explode('%', $newprice);
+                    $newprice = (int)trim($newprice[0]);
+                    $newprice = $this->oldprice - ($newprice * $this->oldprice) / 100;
+                    $this->newprice = $newprice;
+                    break;
+                }
+            }
+            $des = '';
+            foreach ($content_cate->find('div.shortDesc') as $item) {
+                $des .= htmlentities(trim($item));
+            }
+            foreach ($content_cate->find('div#prdDescr') as $item) {
+                $des .= htmlentities(trim($item));
+            }
+            $this->content = $des;
+            foreach ($content_cate->find('div.thumbdiv img') as $item) {
+                $src = explode('?', $item->src);
+                $src = $src[0];
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($src);
+                $this->image = array();
+                $this->image[] = $upload;
+            }
+            $this->link = $link;
+            $this->savedata();
         }
-        $des = '';
-        foreach ($content_cate->find('div.shortDesc') as $item) {
-            $des .= htmlentities(trim($item));
-        }
-        foreach ($content_cate->find('div#prdDescr') as $item) {
-            $des .= htmlentities(trim($item));
-        }
-        $this->content = $des;
-        foreach ($content_cate->find('div.thumbdiv img') as $item) {
-            $src = explode('?', $item->src);
-            $src = $src[0];
-            $upload = new UploadController();
-            $upload = $upload->uploadImage($src);
-            $this->image = array();
-            $this->image[] = $upload;
-        }
-        $this->link = $link;
-        $this->savedata();
     }
 
     public function ralphlauren($urlcate, $domain){
@@ -330,19 +410,22 @@ class CloneController extends BaseController
             $content = new htmldom;
             $html = $this->get_fcontentByGoogle(urlencode($urlcate).'&pg='.$page);
             $content_cate = $content->str_get_html($html);
-            if($content_cate->find('li .product-details dt a')) {
-                foreach ($content_cate->find('li .product-details dt a') as $plink) {
-                    if (isset($plink->href)) {
-                        if(!$this->checkProduct($domain.$plink->href, $domain)) {
-                            $this->ralphlauren_detail($domain.$plink->href);
-                        }
-                        else{
-                            $exit = 2;
-                            //break;
+            if($content_cate) {
+                if ($content_cate->find('li .product-details dt a')) {
+                    foreach ($content_cate->find('li .product-details dt a') as $plink) {
+                        if (isset($plink->href)) {
+                            if (!$this->checkProduct($domain . $plink->href, $domain)) {
+                                $this->ralphlauren_detail($domain . $plink->href);
+                            } else {
+                                $exit = 2;
+                                //break;
+                            }
                         }
                     }
+                    $page++;
+                } else {
+                    break;
                 }
-                $page++;
             }else{
                 break;
             }
@@ -353,42 +436,44 @@ class CloneController extends BaseController
         set_time_limit(0);
         $content = new htmldom;
         $content = $content->str_get_html($this->get_fcontentByGoogle($link));
-        foreach ($content->find('h1.prod-title') as $item) {
-            $this->title = trim(strip_tags($item));
-            break;
-        }
-        foreach ($content->find('span.reg-price') as $item) {
-            $this->oldprice = str_replace('$','',trim(strip_tags($item)));
-            $this->oldprice = str_replace('&#036;','',trim(strip_tags($item)));
-            break;
-        }
-        foreach ($content->find('span.sale-price') as $item) {
-            $this->newprice = str_replace('$','',trim(strip_tags($item)));
-            $this->newprice = str_replace('&#036;','',trim(strip_tags($item)));
-            break;
-        }
-        foreach ($content->find('div.prod-img input') as $item) {
-            if($item->name == "enh_0"){
-                $src = $item->value;
-                $upload = new UploadController();
-                $upload = $upload->uploadImage($src);
-                $this->image = array();
-                $this->image[] = $upload;
+        if($content) {
+            foreach ($content->find('h1.prod-title') as $item) {
+                $this->title = trim(strip_tags($item));
                 break;
             }
+            foreach ($content->find('span.reg-price') as $item) {
+                $this->oldprice = str_replace('$', '', trim(strip_tags($item)));
+                $this->oldprice = str_replace('&#036;', '', trim(strip_tags($item)));
+                break;
+            }
+            foreach ($content->find('span.sale-price') as $item) {
+                $this->newprice = str_replace('$', '', trim(strip_tags($item)));
+                $this->newprice = str_replace('&#036;', '', trim(strip_tags($item)));
+                break;
+            }
+            foreach ($content->find('div.prod-img input') as $item) {
+                if ($item->name == "enh_0") {
+                    $src = $item->value;
+                    $upload = new UploadController();
+                    $upload = $upload->uploadImage($src);
+                    $this->image = array();
+                    $this->image[] = $upload;
+                    break;
+                }
+            }
+            $des = '';
+            foreach ($content->find('div#longDescDiv') as $item) {
+                $des .= htmlentities($item);
+                break;
+            }
+            foreach ($content->find('div.prod-details div.detail') as $item) {
+                $des .= htmlentities($item);
+                break;
+            }
+            $this->content = $des;
+            $this->link = $link;
+            $this->savedata();
         }
-        $des = '';
-        foreach ($content->find('div#longDescDiv') as $item) {
-            $des .= htmlentities($item);
-            break;
-        }
-        foreach ($content->find('div.prod-details div.detail') as $item) {
-            $des .= htmlentities($item);
-            break;
-        }
-        $this->content = $des;
-        $this->link = $link;
-        $this->savedata();
     }
 
     public function sephora($urlcate, $domain){
@@ -396,28 +481,30 @@ class CloneController extends BaseController
         $content = new htmldom;
         $content_cate = $content->str_get_html($this->get_fcontentByGoogle(($urlcate)));
         $json = '';
-        foreach ($content_cate->find('script#searchResult') as $plink) {
-            $json = strip_tags($plink);
-            break;
-        }
-        $json = json_decode($json);
-        foreach ($json->products as $product) {
-            $this->idp = str_replace('P','',$product->id);
-            $link = $domain.$product->product_url;
-            if(!$this->checkProduct($link, $domain)){
-                $this->title = $product->display_name;
-                $this->oldprice = isset($product->derived_sku->list_price_max)?$product->derived_sku->list_price_max:(isset($product->derived_sku->list_price)?$product->derived_sku->list_price:0);
-                $this->newprice = isset($product->derived_sku->list_price_min)?$product->derived_sku->list_price_min:(isset($product->derived_sku->sale_price)?$product->derived_sku->sale_price:0);
-                $src = $domain.$product->hero_image;
-                $upload = new UploadController();
-                $upload = $upload->uploadImage($src);
-                $this->image = array();
-                $this->image[] = $upload;
-                $this->link = $link;
-                $this->sephora_detail($link);
-                sleep(5);
-            }else{
-                //break;
+        if($content_cate) {
+            foreach ($content_cate->find('script#searchResult') as $plink) {
+                $json = strip_tags($plink);
+                break;
+            }
+            $json = json_decode($json);
+            foreach ($json->products as $product) {
+                $this->idp = str_replace('P', '', $product->id);
+                $link = $domain . $product->product_url;
+                if (!$this->checkProduct($link, $domain)) {
+                    $this->title = $product->display_name;
+                    $this->oldprice = isset($product->derived_sku->list_price_max) ? $product->derived_sku->list_price_max : (isset($product->derived_sku->list_price) ? $product->derived_sku->list_price : 0);
+                    $this->newprice = isset($product->derived_sku->list_price_min) ? $product->derived_sku->list_price_min : (isset($product->derived_sku->sale_price) ? $product->derived_sku->sale_price : 0);
+                    $src = $domain . $product->hero_image;
+                    $upload = new UploadController();
+                    $upload = $upload->uploadImage($src);
+                    $this->image = array();
+                    $this->image[] = $upload;
+                    $this->link = $link;
+                    $this->sephora_detail($link);
+                    sleep(5);
+                } else {
+                    //break;
+                }
             }
         }
     }
@@ -426,11 +513,13 @@ class CloneController extends BaseController
         set_time_limit(0);
         $content = new htmldom;
         $content = $content->str_get_html($this->get_fcontentByGoogle($link));
-        foreach($content->find('div.long-description') as $item){
-            $this->content = htmlentities($item);
-            break;
+        if($content) {
+            foreach ($content->find('div.long-description') as $item) {
+                $this->content = htmlentities($item);
+                break;
+            }
+            $this->savedata();
         }
-        $this->savedata();
     }
 
 
@@ -441,16 +530,17 @@ class CloneController extends BaseController
         {
             $content = new htmldom;
             $content_cate = $content->str_get_html($this->get_fcontentByGoogle(($urlcate)));
-
-            if($content_cate->find('span.product-name a')) {
-                foreach ($content_cate->find('span.product-name a') as $plink) {
-                    if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
-                        $this->lacoste_detail($plink->href);
-                    }else{
-                        //break;
+            if($content_cate) {
+                if ($content_cate->find('span.product-name a')) {
+                    foreach ($content_cate->find('span.product-name a') as $plink) {
+                        if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
+                            $this->lacoste_detail($plink->href);
+                        } else {
+                            //break;
+                        }
                     }
+                } else {
                 }
-            }else{
             }
         }
     }
@@ -459,48 +549,50 @@ class CloneController extends BaseController
         set_time_limit(0);
         $content = new htmldom;
         $content = $content->str_get_html($this->file_get_contents_curl($link));
-        foreach($content->find('h1.sku-product-name') as $item){
-            $this->title = trim(strip_tags($item));
-        }
-        $oldprice = $newprice = 0;
-        if($content->find('span.price-standard')) {
-            foreach ($content->find('span.price-standard') as $item) {
-                $oldprice = str_replace('$','',strip_tags($item));
+        if($content) {
+            foreach ($content->find('h1.sku-product-name') as $item) {
+                $this->title = trim(strip_tags($item));
+            }
+            $oldprice = $newprice = 0;
+            if ($content->find('span.price-standard')) {
+                foreach ($content->find('span.price-standard') as $item) {
+                    $oldprice = str_replace('$', '', strip_tags($item));
+                    break;
+                }
+            }
+            if ($content->find('span.price-sales')) {
+                foreach ($content->find('span.price-sales') as $item) {
+                    $newprice = str_replace('$', '', strip_tags($item));
+                    break;
+                }
+            }
+            if ($oldprice == $newprice) {
+                foreach ($content->find('div.sku-product-price') as $item) {
+                    $newprice = str_replace('$', '', strip_tags($item));
+                    $newprice = explode('-', $newprice);
+                    $newprice = trim($newprice[0]);
+                    break;
+                }
+            }
+            $this->oldprice = $oldprice;
+            $this->newprice = $newprice;
+            foreach ($content->find('img.dn') as $item) {
+                $src = explode('?', $item->src);
+                $src = $src[0];
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($src);
+                $this->image = array();
+                $this->image[] = $upload;
                 break;
             }
-        }
-        if($content->find('span.price-sales')) {
-            foreach ($content->find('span.price-sales') as $item) {
-                $newprice = str_replace('$','',strip_tags($item));
-                break;
-            }
-        }
-        if($oldprice == $newprice){
-            foreach ($content->find('div.sku-product-price') as $item) {
-                $newprice = str_replace('$','',strip_tags($item));
-                $newprice = explode('-',$newprice);
-                $newprice = trim($newprice[0]);
-                break;
-            }
-        }
-        $this->oldprice = $oldprice;
-        $this->newprice = $newprice;
-        foreach ($content->find('img.dn') as $item) {
-            $src = explode('?', $item->src);
-            $src = $src[0];
-            $upload = new UploadController();
-            $upload = $upload->uploadImage($src);
-            $this->image = array();
-            $this->image[] = $upload;
-            break;
-        }
 
-        foreach ($content->find('div.product-infos-content-more') as $item) {
-            $this->content = htmlentities($item);
-            break;
+            foreach ($content->find('div.product-infos-content-more') as $item) {
+                $this->content = htmlentities($item);
+                break;
+            }
+            $this->link = $link;
+            $this->savedata();
         }
-        $this->link = $link;
-        $this->savedata();
     }
 
     public function levi($urlcate, $domain){
@@ -508,34 +600,38 @@ class CloneController extends BaseController
         $content = new htmldom;
         $start = 12;
         $content_cate = $content->str_get_html($this->file_get_contents_curl($urlcate));
-        foreach ($content_cate->find('ul#container_results li.product-tile div.product-details a') as $plink) {
-            if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
-                $this->levi_detail($domain . $plink->href);
-            }
-        }
-        $exit = 1;
-        while(1&&$exit==1)
-        {
-            $url_s = str_replace($domain,'',$urlcate);
-            $url = 'http://www.levi.com/US/en_US/includes/searchResultsScroll/';
-            $url .= '?nao='.$start.'&'.'url='.$url_s;
-            $content_cate = $content->str_get_html($this->file_get_contents_curl($url));
-            if($content_cate->find('div.product-details a')){
-                foreach ($content_cate->find('div.product-details a') as $plink) {
-                    if (isset($plink->href)) {
-                        if(!$this->checkProduct($plink->href, $domain)) {
-                            $this->levi_detail($domain . $plink->href);
-                        }else{
-                            $exit = 2;
-                            //break;
-                        }
-                    }
+        if($content_cate) {
+            foreach ($content_cate->find('ul#container_results li.product-tile div.product-details a') as $plink) {
+                if (isset($plink->href) && !$this->checkProduct($plink->href, $domain)) {
+                    $this->levi_detail($domain . $plink->href);
                 }
-                $start = $start + 12;
-            }else{
-                break;
             }
-
+            $exit = 1;
+            while(1&&$exit==1) {
+                $url_s = str_replace($domain, '', $urlcate);
+                $url = 'http://www.levi.com/US/en_US/includes/searchResultsScroll/';
+                $url .= '?nao=' . $start . '&' . 'url=' . $url_s;
+                $content_cate = $content->str_get_html($this->file_get_contents_curl($url));
+                if($content_cate) {
+                    if ($content_cate->find('div.product-details a')) {
+                        foreach ($content_cate->find('div.product-details a') as $plink) {
+                            if (isset($plink->href)) {
+                                if (!$this->checkProduct($plink->href, $domain)) {
+                                    $this->levi_detail($domain . $plink->href);
+                                } else {
+                                    $exit = 2;
+                                    //break;
+                                }
+                            }
+                        }
+                        $start = $start + 12;
+                    } else {
+                        break;
+                    }
+                }else{
+                    break;
+                }
+            }
         }
     }
 
@@ -572,20 +668,24 @@ class CloneController extends BaseController
         {
             $content = new htmldom;
             $content_cate = $content->str_get_html($this->get_fcontentByGoogle($urlcate.'&pagesize=60&page='.$page));
-            if($content_cate->find('div.product_item div.item_pic a')) {
-                foreach ($content_cate->find('div.product_item div.item_pic a') as $plink) {
-                    if (isset($plink->href)) {
-                        if(!$this->checkProduct($plink->href, $domain)) {
-                            $this->forever21_detail($plink->href);
-                        }
-                        else{
-                            $exit = 2;
-                            //break;
+            if($content_cate) {
+                if ($content_cate->find('div.product_item div.item_pic a')) {
+                    foreach ($content_cate->find('div.product_item div.item_pic a') as $plink) {
+                        if (isset($plink->href)) {
+                            if (!$this->checkProduct($plink->href, $domain)) {
+                                $this->forever21_detail($plink->href);
+                            } else {
+                                $exit = 2;
+                                //break;
+                            }
                         }
                     }
+                    $page++;
+                } else {
+                    break;
                 }
-                $page++;
-            }else{
+            }
+            else{
                 break;
             }
         }
@@ -595,31 +695,33 @@ class CloneController extends BaseController
         set_time_limit(0);
         $content = new htmldom;
         $content = $content->str_get_html($this->get_fcontentByGoogle($url_detail));
-        foreach($content->find('h1.item_name_p') as $title){
-            $this->title = trim(strip_tags($title));
-            break;
+        if($content) {
+            foreach ($content->find('h1.item_name_p') as $title) {
+                $this->title = trim(strip_tags($title));
+                break;
+            }
+            foreach ($content->find('img.ItemImage') as $item) {
+                $upload = new UploadController();
+                $upload = $upload->uploadImage($item->src);
+                $this->image = array();
+                $this->image[] = $upload;
+                break;
+            }
+            foreach ($content->find('div.price_p span.original') as $item) {
+                $this->oldprice = str_replace('$', '', strip_tags($item));
+                break;
+            }
+            foreach ($content->find('div.price_p span.sale') as $item) {
+                $this->newprice = str_replace('$', '', strip_tags($item));
+                break;
+            }
+            foreach ($content->find('div.pdp_description article.ac-small') as $item) {
+                $this->content = htmlentities($item);
+                break;
+            }
+            $this->link = $url_detail;
+            $this->savedata();
         }
-        foreach ($content->find('img.ItemImage') as $item) {
-            $upload = new UploadController();
-            $upload = $upload->uploadImage($item->src);
-            $this->image = array();
-            $this->image[] = $upload;
-            break;
-        }
-        foreach ($content->find('div.price_p span.original') as $item) {
-            $this->oldprice = str_replace('$','',strip_tags($item));
-            break;
-        }
-        foreach ($content->find('div.price_p span.sale') as $item) {
-            $this->newprice = str_replace('$','',strip_tags($item));
-            break;
-        }
-        foreach ($content->find('div.pdp_description article.ac-small') as $item) {
-            $this->content = htmlentities($item);
-            break;
-        }
-        $this->link = $url_detail;
-        $this->savedata();
     }
 
     public function checkProduct($link, $domain){
@@ -639,6 +741,10 @@ class CloneController extends BaseController
         }
         if(strpos($domain, 'ralphlauren.com') !== false){
             preg_match('/(productId=)(.*)()/',$link,$matches);
+            $id = isset($matches[2])?$matches[2]:0;
+        }
+        if(strpos($domain, 'hm.com') !== false){
+            preg_match('/(\/product\/)(.*)(\?article)/',$link,$matches);
             $id = isset($matches[2])?$matches[2]:0;
         }
         if(strpos($domain, 'columbia.com') !== false || strpos($domain, 'armaniexchange.com') !== false || strpos($domain, 'aldoshoes.com') !== false || strpos($domain, 'lacoste.com') !== false){
