@@ -96,7 +96,7 @@
                     <ul class="bxslider5" itemscope itemtype="http://schema.org/BreadcrumbList">
                         <?php foreach($feature_in_shop as $v):?>
                             <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                <a itemprop="url" title="<?= isset($v->title)?$v->title:'';?>" href="/product-shop/<?= isset($v->slug)?$v->slug:''?>">
+                                <a itemprop="url" title="<?= isset($v->title)?$v->title:'';?>" href="/product-clone/<?= isset($v->slug)?$v->slug:''?>">
                                     <img itemprop="url" title="<?= isset($v->title)?$v->title:'';?>" style="width: 100%" src="/<?= \App\Helpers\App::resize_image(160, 240,isset($v->image[0])?$v->image[0]:''); ?>" >
                                     <br>
                                     <h3 itemprop="name" style="font-size: 12px"><?= isset($v->title)?$v->title:'';?></h3>

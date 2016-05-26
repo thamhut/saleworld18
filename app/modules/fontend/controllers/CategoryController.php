@@ -80,7 +80,8 @@ class CategoryController extends BaseController
         $params = $this->request->get();
         $data['category_level'] = $category = CmsCategory::findFirst(array("slug = '$slug'"));
         $data['meta_title'] = 'saleworld18 - category ';
-        $data['s'] = $slug1;
+        $data['s'] = Website::findFirst(array("slug = '$slug1'"));
+        $data['s'] = empty($data['s'])?$slug1:$data['s']->id;
         $data['p'] = isset($params['p']) && (int)$params['p'] > 0 ? (int)$params['p'] : 1;
         $skip_p = $limit*($data['p'] - 1);
         $data['url_clone'] = $params['_url'];
@@ -102,15 +103,15 @@ class CategoryController extends BaseController
                     }
                 }
             }
-            $data['meta_title'] = $data['meta_title'].' '.$category->title;
+            $data['meta_title'] = $data['meta_title'].' '.$slug1.' '.$category->title;
             $data['meta_content'] = 'Product in '.$data['meta_title'];
             $data['c'] = $category->id;
-            $data['productclone'] = ProductClone::find(array('conditions' => array('idcate' => (int)$data['c'], 'shopId' => (int)$slug1), 'sort'=>array('_id'=>-1), 'limit' => $limit, 'skip' => $skip_p, 'columns'=>'slug,image, title, created_at'));
+            $data['productclone'] = ProductClone::find(array('conditions' => array('idcate' => (int)$data['c'], 'shopId' => (int)$data['s']), 'sort'=>array('_id'=>-1), 'limit' => $limit, 'skip' => $skip_p, 'columns'=>'slug,image, title, created_at'));
         }else{
             $data['meta_title'] = $data['meta_title'].' '.$category->title;
             $data['meta_content'] = 'Product in '.$data['meta_title'];
             $this->tag->SetTitle($this->_('Sale world | Category'));
-            $data['productclone'] = ProductClone::find(array('conditions' => array('shopId' => (int)$slug1), 'sort'=>array('_id'=>-1), 'limit' => $limit, 'skip' => $skip_p, 'columns'=>'slug,image, title, created_at'));
+            $data['productclone'] = ProductClone::find(array('conditions' => array('shopId' => (int)$data['s']), 'sort'=>array('_id'=>-1), 'limit' => $limit, 'skip' => $skip_p, 'columns'=>'slug,image, title, created_at'));
         }
         $data['pagination_clone'] = View::next_prev(count($data['productclone']), $data['p'], $data['url_clone'], $limit);
         $this->view->setVars($data);
